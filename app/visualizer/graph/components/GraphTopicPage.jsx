@@ -16,9 +16,9 @@ export default function GraphTopicPage({ topic, Animation }) {
   return (
     <>
       <Navbar />
-      <main className="bg-white py-20 text-surface-900 dark:bg-surface-950 dark:text-white">
+      <main className="bg-white pt-6 pb-16 text-surface-900 dark:bg-surface-950 dark:text-white">
         <section className="container-app">
-          <div className="mb-8 mt-10">
+          <div className="mb-8 mt-2">
             <Breadcrumbs paths={paths} />
           </div>
 

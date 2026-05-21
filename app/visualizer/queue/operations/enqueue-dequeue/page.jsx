@@ -58,9 +58,9 @@ export default function Page() {
         <Navbar />
       </div>
 
-      <div className="py-20 bg-white dark:bg-[#0f0f0f] text-[#1a1a1a] dark:text-[#f5f5f5]">
+      <div className="pt-6 pb-16 bg-white dark:bg-[#0f0f0f] text-[#1a1a1a] dark:text-[#f5f5f5]">
         <section className="px-6 md:px-12">
-          <div className="mt-10 sm:mt-10 mb-4">
+          <div className="mt-2 mb-4">
             <Breadcrumbs paths={paths} />
           </div>
           <div className="flex items-center flex-col">
