@@ -15,22 +15,30 @@ function StreakCounter({ activityDates }) {
     };
 
     const uniqueSortedDates = [...new Set(
-      activityDates.map(d => toLocalStr(new Date(d)))
+      activityDates.map((date) => {
+        const localDate = new Date(date);
+        localDate.setHours(0, 0, 0, 0);
+        return toLocalStr(localDate);
+      })
     )].sort();
 
     let highest = 1;
     let tempStreak = 1;
     for (let i = 1; i < uniqueSortedDates.length; i++) {
-      const prev = new Date(uniqueSortedDates[i - 1]);
-      const curr = new Date(uniqueSortedDates[i]);
-      const diff = (curr - prev) / (1000 * 60 * 60 * 24);
+      const prev = new Date(uniqueSortedDates[i - 1] + "T00:00:00");
+      const curr = new Date(uniqueSortedDates[i] + "T00:00:00");
+
+      const diff = Math.round(
+        (curr - prev) / (1000 * 60 * 60 * 24)
+      );
       if (diff === 1) tempStreak++;
       else tempStreak = 1;
       if (tempStreak > highest) highest = tempStreak;
     }
 
     let streakCount = 0;
-    let checkDate = new Date(toLocalStr(new Date()));
+    let checkDate = new Date();
+    checkDate.setHours(0, 0, 0, 0);
     for (let i = uniqueSortedDates.length - 1; i >= 0; i--) {
       if (uniqueSortedDates[i] === toLocalStr(checkDate)) {
         streakCount++;
