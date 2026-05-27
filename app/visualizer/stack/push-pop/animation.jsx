@@ -1,13 +1,15 @@
 "use client";
-import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import PushPop from "@/app/components/ui/PushPop";
+import usePlayback from "@/app/hooks/usePlayback";
 
 const StackVisualizer = () => {
   const [stack, setStack] = useState([]);
   const [operation, setOperation] = useState(null);
   const [message, setMessage] = useState("Stack is empty");
   const [isAnimating, setIsAnimating] = useState(false);
+  const { speed, setSpeed } = usePlayback(1);
   const stackRefs = useRef([]);
   const animationQueue = useRef([]);
 
@@ -41,39 +43,35 @@ const StackVisualizer = () => {
         gsap.fromTo(
           el,
           { scale: 1 },
-          { scale: 1.2, yoyo: true, repeat: 1, duration: 0.2 }
+          { scale: 1.2, yoyo: true, repeat: 1, duration: 0.2 / speed }
         );
       }
     }
   }, [stack, operation]);
 
   return (
-    <main className="container mx-auto px-6 pb-8">
+    <main className="container mx-auto">
       <p className="text-lg text-center text-gray-600 dark:text-gray-400 mb-8">
         Visualize the LIFO (Last In, First Out) principle
       </p>
 
       <div className="max-w-4xl mx-auto">
-        {/* Use the PushPop component */}
         <PushPop
           stack={stack}
           setStack={setStack}
           isAnimating={isAnimating}
           setIsAnimating={setIsAnimating}
-          setMessage={setMessage}
+          operation={operation}
           setOperation={setOperation}
+          message={message}
+          setMessage={setMessage}
+          speed={speed}
+          setSpeed={setSpeed}
         />
 
         {/* Stack Visualization */}
-        <div className="bg-white dark:bg-neutral-950 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-neutral-950 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
           <h2 className="text-xl font-semibold mb-4">Stack Visualization</h2>
-
-          {/* Operation Status */}
-          {operation && (
-            <div className="mb-4 p-3 rounded-lg bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
-              {operation}
-            </div>
-          )}
 
           {/* Vertical Stack */}
           <div className="flex flex-col items-center min-h-[300px]">
