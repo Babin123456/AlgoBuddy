@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
-import Navbar from '@/app/components/navbarinner';
+import Navbar from '@/app/components/navbar';
 import Footer from '@/app/components/footer';
 import { Play, Pause, ChevronRight, ChevronLeft, RotateCcw, AlertCircle, CheckCircle, Info, BookOpen, Layers, Award } from 'lucide-react';
 import useVisualizerKeyboard from "@/app/hooks/useVisualizerKeyboard";

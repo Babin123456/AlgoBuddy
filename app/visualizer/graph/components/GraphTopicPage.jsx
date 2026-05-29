@@ -1,4 +1,4 @@
-import Navbar from "@/app/components/navbarinner";
+import Navbar from "@/app/components/navbar";
 import Footer from "@/app/components/footer";
 import BackToTop from "@/app/components/ui/backtotop";
 import Breadcrumbs from "@/app/components/ui/Breadcrumbs";
