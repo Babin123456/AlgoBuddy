@@ -31,7 +31,7 @@ const AlphaBetaPruningContent = () => {
           Why use Alpha-Beta Pruning?
         </h3>
         <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-          Minimax explores all possible states in the game tree. For games like Chess, the number of states is astronomical. Alpha-beta pruning allows us to search much deeper in the same amount of time by cutting off branches that won't affect the final decision.
+          Minimax explores all possible states in the game tree. For games like Chess, the number of states is astronomical. Alpha-beta pruning allows us to search much deeper in the same amount of time by cutting off branches that won&apos;t affect the final decision.
         </p>
       </section>
 
