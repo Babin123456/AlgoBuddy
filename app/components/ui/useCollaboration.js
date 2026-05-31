@@ -74,6 +74,7 @@ export function useCollaboration({
   const sessionSecretRef = useRef("");
   const sequenceRef = useRef(0);
   const seenSequencesRef = useRef(new Map());
+  const processedEventIdsRef = useRef(new Set());
   const callbacksRef = useRef({ onRemoteStateDelta });
   const currentDisplayNameRef = useRef(displayName);
   const recordingRef = useRef(recording);
@@ -128,7 +129,18 @@ export function useCollaboration({
   const processEnvelope = useCallback((envelope) => {
     if (!envelope || typeof envelope !== "object") return;
 
-    if (!canApplyPrivilegedSessionEvent({ presenterId }, envelope)) {
+    if (envelope.id && processedEventIdsRef.current.has(envelope.id)) {
+      return;
+    }
+
+    if (envelope.id) {
+      if (processedEventIdsRef.current.size > 5000) {
+        processedEventIdsRef.current = new Set();
+      }
+      processedEventIdsRef.current.add(envelope.id);
+    }
+
+    if (!canApplyPrivilegedSessionEvent({ presenterId: presenterIdRef.current }, envelope)) {
       return;
     }
 
@@ -201,7 +213,7 @@ export function useCollaboration({
       default:
         return;
     }
-  }, [presenterId, recordIfNeeded, removeParticipant, updateParticipantsFromJoin]);
+  }, [recordIfNeeded, removeParticipant, updateParticipantsFromJoin]);
 
   const sendEnvelope = useCallback((type, payload = {}, options = {}) => {
     const activeSession = sessionRef.current;
@@ -237,6 +249,7 @@ export function useCollaboration({
   const attachSession = useCallback(async (nextSession, sessionChannelName, sessionSecret = "") => {
     cleanupTransport();
     seenSequencesRef.current = new Map();
+    processedEventIdsRef.current = new Set();
     sequenceRef.current = 0;
     setParticipants([]);
     setAnnotations([]);
@@ -362,6 +375,7 @@ export function useCollaboration({
     presenterIdRef.current = null;
     sessionSecretRef.current = "";
     seenSequencesRef.current = new Map();
+    processedEventIdsRef.current = new Set();
   }, [cleanupTransport, sendEnvelope]);
 
   const requestControl = useCallback(() => {
@@ -409,13 +423,13 @@ export function useCollaboration({
   const exportRecording = useCallback(() => {
     return serializeSessionTrace({
       metadata: {
-        session,
-        presenterId,
+        session: sessionRef.current,
+        presenterId: presenterIdRef.current,
         exportedBy: clientId,
       },
       events: recordedEvents,
     });
-  }, [clientId, presenterId, recordedEvents, session]);
+  }, [clientId, recordedEvents]);
 
   const importRecording = useCallback((text, initialSnapshot = {}) => {
     const trace = deserializeSessionTrace(text);
