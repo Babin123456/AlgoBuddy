@@ -78,6 +78,7 @@ export async function POST(request) {
   try {
     if (!validateCsrfOrigin(request)) {
       return Response.json({ error: "CSRF validation failed" }, { status: 403 });
+    }
     const { user, configured } = await getAuthenticatedUser();
     if (configured && !user) {
       return Response.json(
