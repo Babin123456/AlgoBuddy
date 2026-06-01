@@ -21,7 +21,28 @@ jobs:
                 cache: 'npm'
 
             - name: Install dependencies
-              run: npm ci
+              run: |
+                # Cross-platform: clean previous node_modules and npm cache to avoid cleanup/permission issues
+                if [ "${{ runner.os }}" != 'Windows' ]; then
+                  rm -rf node_modules || true
+                  npm cache clean --force || true
+                fi
+
+                # Retry npm ci up to 3 times to mitigate transient network errors (ECONNRESET)
+                if [ "${{ runner.os }}" != 'Windows' ]; then
+                  retries=3
+                  count=0
+                  until [ $count -ge $retries ]
+                  do
+                    npm ci && break
+                    count=$((count+1))
+                    echo "npm ci failed, retrying ($count/$retries)"
+                    sleep 5
+                  done
+                else
+                  # On Windows use PowerShell retry loop
+                  powershell -Command "for ($i=0; $i -lt 3; $i++) { npm ci; if ($LASTEXITCODE -eq 0) { break } Start-Sleep -s 5 }"
+                fi
 
             - name: Run tests
               run: npm run test
