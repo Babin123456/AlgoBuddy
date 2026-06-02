@@ -442,16 +442,25 @@ export async function backfillJoinCodeIndex() {
 
 /**
  * Lists publicly visible collaboration sessions using a sorted-set secondary
- * index instead of redis.keys(). Supports cursor-based pagination via a score
- * (Unix timestamp ms) so callers can page through results without a keyspace scan.
+ * index instead of redis.keys(). Supports cursor-based pagination via a
+ * composite cursor (score::sessionId) so callers can page through results
+ * without a keyspace scan.  The composite cursor avoids skipping or
+ * duplicating entries when multiple sessions share the same timestamp score.
  *
  * @param {object}  options
  * @param {number}  [options.limit=50]    Max results to return (capped at 100).
- * @param {number}  [options.cursor]      Exclusive upper-bound score from the
- *                                        previous page's nextCursor. Omit or
- *                                        pass Infinity for the first page.
- * @returns {{ sessions: object[], nextCursor: number|null }}
+ * @param {string}  [options.cursor]      Composite cursor from the previous
+ *                                        page's nextCursor (format "score::id").
+ *                                        Omit for the first page.
+ * @returns {{ sessions: object[], nextCursor: string|null }}
  */
+function parseCursor(cursor) {
+  if (!cursor || cursor === "+inf") return { score: "+inf" };
+  const parts = cursor.split("::", 2);
+  const score = Number.isFinite(Number(parts[0])) ? Number(parts[0]) : "+inf";
+  return { score, sessionId: parts[1] || null };
+}
+
 function clampLimit(value) {
   const limit = Number.isFinite(Number(value)) ? Number(value) : DEFAULT_PAGE_LIMIT;
   return Math.min(Math.max(1, limit), MAX_PAGE_LIMIT);
@@ -460,12 +469,14 @@ function clampLimit(value) {
 export async function listCollaborationSessions({ limit, cursor } = {}) {
   ensureRedisConnection();
   const pageSize = clampLimit(limit);
-  const maxScore = Number.isFinite(Number(cursor)) ? Number(cursor) : "+inf";
+  const parsed = parseCursor(cursor);
+  const maxScore = parsed.score;
 
   if (redis) {
     const sessions = [];
     const expiredIds = [];
     let offset = 0;
+    let skipBoundary = parsed.sessionId ? true : false;
     const fetchSize = pageSize + MAX_EXPIRED_BUFFER;
 
     while (sessions.length < pageSize) {
@@ -477,16 +488,25 @@ export async function listCollaborationSessions({ limit, cursor } = {}) {
 
       if (!ids || ids.length === 0) break;
 
-      // Fetch all session objects in one round-trip.
       const values = await redis.mget(...ids.map(sessionKey));
 
       for (let i = 0; i < ids.length; i++) {
+        const id = ids[i];
         const session = values[i];
+
+        if (skipBoundary && parsed.sessionId) {
+          const memberScore = await redis.zscore(SESSION_INDEX_KEY, id);
+          if (memberScore === parsed.score && id <= parsed.sessionId) {
+            continue;
+          }
+          skipBoundary = false;
+        }
+
         if (session && session.visibility === "public") {
           sessions.push(discoverableSessionView(session, { includeJoinCode: false }));
           if (sessions.length >= pageSize) break;
         } else if (!session) {
-          expiredIds.push(ids[i]);
+          expiredIds.push(id);
         }
       }
 
@@ -498,15 +518,19 @@ export async function listCollaborationSessions({ limit, cursor } = {}) {
       await removeFromSessionIndex(expiredIds);
     }
 
-    // Compute the next cursor: lowest score among the returned session IDs.
     let nextCursor = null;
     if (sessions.length > 0) {
       const sessionKeys = sessions.map((s) => sessionKey(s.id));
       const scores = await redis.zmscore(SESSION_INDEX_KEY, ...sessionKeys);
-      const lowestScore = scores
-        ? scores.reduce((min, s) => (s !== null && s < min ? s : min), Infinity)
+      const lowest = scores
+        ? scores.reduce(
+            (acc, s, idx) => (s !== null && s < acc.score ? { score: s, id: sessions[idx].id } : acc),
+            { score: Infinity, id: null },
+          )
         : null;
-      nextCursor = Number.isFinite(lowestScore) ? lowestScore : null;
+      if (lowest && Number.isFinite(lowest.score)) {
+        nextCursor = `${lowest.score}::${lowest.id}`;
+      }
     }
 
     return { sessions, nextCursor };
@@ -515,11 +539,20 @@ export async function listCollaborationSessions({ limit, cursor } = {}) {
   let memorySessionsList = [...memorySessions.values()]
     .filter((session) => session.visibility === "public")
     .map((session) => discoverableSessionView(session, { includeJoinCode: false }))
-    .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt));
+    .sort((left, right) => {
+      const timeDiff = right.updatedAt.localeCompare(left.updatedAt);
+      if (timeDiff !== 0) return timeDiff;
+      return left.id.localeCompare(right.id);
+    });
 
   let startIndex = 0;
   if (maxScore !== "+inf") {
-    startIndex = memorySessionsList.findIndex((s) => new Date(s.updatedAt).getTime() < maxScore);
+    startIndex = memorySessionsList.findIndex((s) => {
+      const st = new Date(s.updatedAt).getTime();
+      if (st < maxScore) return true;
+      if (st === maxScore && parsed.sessionId && s.id <= parsed.sessionId) return true;
+      return false;
+    });
     if (startIndex < 0) {
       return { sessions: [], nextCursor: null };
     }
@@ -527,9 +560,11 @@ export async function listCollaborationSessions({ limit, cursor } = {}) {
 
   const page = memorySessionsList.slice(startIndex, startIndex + pageSize);
   const hasMore = startIndex + pageSize < memorySessionsList.length;
-  const nextCursor = hasMore && page.length > 0
-    ? new Date(page[page.length - 1].updatedAt).getTime()
-    : null;
+  let nextCursor = null;
+  if (hasMore && page.length > 0) {
+    const last = page[page.length - 1];
+    nextCursor = `${new Date(last.updatedAt).getTime()}::${last.id}`;
+  }
 
   return { sessions: page, nextCursor };
 }
