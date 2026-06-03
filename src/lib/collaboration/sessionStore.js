@@ -99,7 +99,7 @@ function validateCsrfOrigin(request) {
     process.env.NEXT_PUBLIC_APP_URL,
   ].filter(Boolean);
 
-  if (!origin && !referer) return true;
+  if (!origin && !referer) return false;
   const source = origin || referer;
   return allowedOrigins.some((allowed) => source.startsWith(allowed));
 }
