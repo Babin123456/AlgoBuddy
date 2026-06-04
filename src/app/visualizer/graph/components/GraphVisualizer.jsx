@@ -596,6 +596,12 @@ export default function GraphVisualizer({ algorithm = "bfs", startNode: initialS
             isDirected={isDirected}
             isWeighted={isWeighted}
           />
+          <AdjacencyPanel
+            nodes={nodes}
+            edges={edges}
+            isDirected={isDirected}
+            isWeighted={isWeighted}
+          />
           <div className="mt-4 space-y-4">
             {showFloydMatrix && (
               <div>
