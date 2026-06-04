@@ -162,7 +162,7 @@ const Footer = () => {
             <div>
               <h3 className={footerHeading}>Resources</h3>
               <div className="space-y-4">
-                {/* <Link href="/tutorials" className={footerLink}>
+                <Link href="/tutorials" className={footerLink}>
                   Tutorials
                 </Link>
                 <Link href="/cheatsheets" className={footerLink}>
@@ -176,7 +176,7 @@ const Footer = () => {
                 </Link>
                 <Link href="/blog" className={footerLink}>
                   Blog
-                </Link> */}
+                </Link>
                 <Link href="/faq" className={footerLink}>
                   FAQ
                 </Link>
