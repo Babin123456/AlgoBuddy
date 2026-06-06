@@ -9,25 +9,28 @@ import { useEffect } from "react";
  * Cleans up the listener automatically on unmount.
  *
  * Shortcut map (matches the controls in BubbleSortVisualizer and siblings):
- *   Space   → Play / Pause  (calls onStart or onReset depending on state)
- *   R / r   → Reset All
- *   +  / =  → Speed up   (increase speed by 0.5, max 5)
- *   -       → Slow down  (decrease speed by 0.5, min 0.5)
+ *   Space      → Play / Pause  (calls onStart or onReset depending on state)
+ *   ArrowRight → Step forward one iteration (calls onStepForward when paused)
+ *   R / r      → Reset All
+ *   +  / =     → Speed up   (increase speed by 0.5, max 5)
+ *   -          → Slow down  (decrease speed by 0.5, min 0.5)
  *
  * @param {object}   opts
- * @param {Function} opts.onStart        — the "Start Sort / Play" handler
- * @param {Function} opts.onReset        — the "Reset All" handler
- * @param {Function} opts.onSpeedChange  — called with the next speed value (number)
- * @param {number}   opts.speed          — current speed value (0.5 – 5, step 0.5)
- * @param {boolean}  opts.sorting        — true while animation is running
- * @param {boolean}  opts.sorted         — true when sort is complete
- * @param {boolean}  [opts.enabled=true] — set false to disable (e.g. modal open)
+ * @param {Function} opts.onStart           — the "Start Sort / Play" handler
+ * @param {Function} opts.onReset           — the "Reset All" handler
+ * @param {Function} opts.onSpeedChange     — called with the next speed value (number)
+ * @param {Function} [opts.onStepForward]   — called to advance one step (when paused)
+ * @param {number}   opts.speed             — current speed value (0.5 – 5, step 0.5)
+ * @param {boolean}  opts.sorting           — true while animation is running
+ * @param {boolean}  opts.sorted            — true when sort is complete
+ * @param {boolean}  [opts.enabled=true]    — set false to disable (e.g. modal open)
  */
 export default function useVisualizerKeyboard({
   onStart,
   onReset,
   onSpeedChange,
   onTogglePlayPause,
+  onStepForward,
   speed,
   sorting,
   sorted,
@@ -54,6 +57,14 @@ export default function useVisualizerKeyboard({
           }
           break;
 
+        case "ArrowRight":
+          // Step forward one iteration when paused or idle
+          if (onStepForward && !sorted) {
+            e.preventDefault();
+            onStepForward();
+          }
+          break;
+
         case "r":
         case "R":
           if (!sorting) {
@@ -77,5 +88,5 @@ export default function useVisualizerKeyboard({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [enabled, onStart, onReset, onSpeedChange, onTogglePlayPause, speed, sorting, sorted]);
+  }, [enabled, onStart, onReset, onSpeedChange, onTogglePlayPause, onStepForward, speed, sorting, sorted]);
 }
