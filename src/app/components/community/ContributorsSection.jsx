@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import { Users } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -10,6 +11,18 @@ const MOCK_CONTRIBUTORS = Array.from({ length: 12 }, (_, i) => ({
   role: "Contributor",
   github_url: "https://github.com",
 }));
+
+const gridVariants = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.05 },
+  },
+};
+
+const contributorVariants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" } },
+};
 
 function ContributorSkeleton() {
   return (
@@ -27,16 +40,17 @@ function ContributorCard({ contributor }) {
       href={contributor.github_url}
       target="_blank"
       rel="noopener noreferrer"
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, ease: "easeOut" }}
-      className="card-surface flex flex-col items-center gap-3 p-4 transition-shadow duration-[var(--motion-fast)] hover:shadow-[var(--shadow-card-hover)]"
+      variants={contributorVariants}
+      aria-label={`${contributor.name}'s GitHub profile`}
+      className="card-surface flex flex-col items-center gap-3 p-4 transition-shadow duration-[var(--motion-fast)] hover:shadow-[var(--shadow-card-hover)] focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
     >
-      <img
+      <Image
         src={contributor.avatar_url}
-        alt={contributor.name}
+        alt={`${contributor.name}'s avatar`}
+        width={64}
+        height={64}
+        unoptimized
         className="h-16 w-16 rounded-full object-cover"
-        loading="lazy"
       />
       <span className="text-sm font-semibold text-[var(--udemy-text)] dark:text-[var(--udemy-dark-text)]">
         {contributor.name}
@@ -106,9 +120,9 @@ export default function ContributorsSection() {
           <AnimatePresence mode="wait">
             <motion.div
               key={showAll ? "all" : "initial"}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.25 }}
+              variants={gridVariants}
+              initial="hidden"
+              animate="visible"
               className="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-6"
             >
               {displayed.map((c) => (
@@ -122,10 +136,11 @@ export default function ContributorsSection() {
           <div className="mt-8 text-center">
             <button
               onClick={() => setShowAll((prev) => !prev)}
-              className="btn-base border-2 border-[var(--udemy-purple)] text-[var(--udemy-purple)] hover:bg-[var(--udemy-purple)] hover:text-white"
+              aria-live="polite"
+              className="btn-base border-2 border-[var(--udemy-purple)] text-[var(--udemy-purple)] hover:bg-[var(--udemy-purple)] hover:text-white focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
             >
               <Users size={16} />
-              {showAll ? "Show Less" : "View All Contributors"}
+              {showAll ? "Show Less" : `View All Contributors (${contributors.length})`}
             </button>
           </div>
         )}

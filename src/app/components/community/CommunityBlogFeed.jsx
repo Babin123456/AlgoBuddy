@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { PenLine, ArrowRight, Clock, CalendarDays } from "lucide-react";
 
@@ -13,6 +14,27 @@ const MOCK_POSTS = [
   { id: 5, title: "How I Used AlgoBuddy to Ace My Technical Interview", excerpt: "My personal experience using interactive visualizations to prepare for FAANG-style coding interviews.", category: "Experience", author: { name: "James Kim", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=james" }, date: "2026-05-15", readTime: "6 min", color: "#059669" },
   { id: 6, title: "Understanding Graph Traversal Algorithms", excerpt: "A visual deep-dive into BFS and DFS with real-world applications and complexity analysis.", category: "Tutorial", author: { name: "Maria Garcia", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=maria" }, date: "2026-05-12", readTime: "8 min", color: "#a435f0" },
 ];
+
+function BlogSkeleton() {
+  return (
+    <div className="card-surface flex flex-col overflow-hidden">
+      <div className="flex-1 p-5 space-y-3">
+        <div className="skeleton-shimmer h-5 w-20 rounded-full" />
+        <div className="skeleton-shimmer h-5 w-full" />
+        <div className="skeleton-shimmer h-4 w-3/4" />
+        <div className="skeleton-shimmer h-4 w-full" />
+        <div className="skeleton-shimmer h-4 w-2/3" />
+      </div>
+      <div className="flex items-center gap-3 border-t border-[var(--color-border)] px-5 py-3">
+        <div className="skeleton-shimmer h-7 w-7 rounded-full" />
+        <div className="flex-1 space-y-1">
+          <div className="skeleton-shimmer h-3 w-24" />
+          <div className="skeleton-shimmer h-2 w-32" />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function BlogCard({ post }) {
   return (
@@ -39,9 +61,12 @@ function BlogCard({ post }) {
         </p>
       </div>
       <div className="flex items-center gap-3 border-t border-[var(--color-border)] px-5 py-3">
-        <img
+        <Image
           src={post.author.avatar}
-          alt={post.author.name}
+          alt={`${post.author.name}'s avatar`}
+          width={28}
+          height={28}
+          unoptimized
           className="h-7 w-7 rounded-full object-cover"
         />
         <div className="flex-1 min-w-0">
@@ -58,12 +83,14 @@ function BlogCard({ post }) {
   );
 }
 
-export default function CommunityBlogFeed() {
+export default function CommunityBlogFeed({ loading = false }) {
   const [activeCategory, setActiveCategory] = useState("All");
 
   const filtered = activeCategory === "All"
     ? MOCK_POSTS
     : MOCK_POSTS.filter((p) => p.category === activeCategory);
+
+  const categoryId = "blog-category-tablist";
 
   return (
     <section className="section-app">
@@ -81,6 +108,7 @@ export default function CommunityBlogFeed() {
             href="https://discord.gg/PqnazRxPc"
             target="_blank"
             rel="noopener noreferrer"
+            aria-label="Write a blog post on Discord"
             className="btn-base bg-[var(--udemy-purple)] text-white hover:bg-[var(--udemy-purple-dark)]"
           >
             <PenLine size={16} />
@@ -88,12 +116,15 @@ export default function CommunityBlogFeed() {
           </a>
         </div>
 
-        <div className="mb-6 flex flex-wrap gap-2">
+        <div role="tablist" aria-label="Blog categories" className="mb-6 flex flex-wrap gap-2">
           {CATEGORIES.map((cat) => (
             <button
               key={cat}
+              role="tab"
+              aria-selected={activeCategory === cat}
+              aria-controls={categoryId}
               onClick={() => setActiveCategory(cat)}
-              className={`relative rounded-full px-4 py-1.5 text-sm font-medium transition-colors duration-[var(--motion-fast)] ${
+              className={`relative rounded-full px-4 py-1.5 text-sm font-medium transition-colors duration-[var(--motion-fast)] focus-visible:ring-2 focus-visible:ring-primary focus:outline-none ${
                 activeCategory === cat
                   ? "text-[var(--udemy-purple)]"
                   : "text-[var(--color-muted)] hover:text-[var(--udemy-text)] dark:hover:text-[var(--udemy-dark-text)]"
@@ -111,22 +142,31 @@ export default function CommunityBlogFeed() {
           ))}
         </div>
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeCategory}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
-          >
-            {filtered.map((post) => (
-              <BlogCard key={post.id} post={post} />
+        {loading ? (
+          <div id={categoryId} className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <BlogSkeleton key={i} />
             ))}
-          </motion.div>
-        </AnimatePresence>
+          </div>
+        ) : (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeCategory}
+              id={categoryId}
+              initial={{ opacity: 0, x: -16 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 16 }}
+              transition={{ duration: 0.2 }}
+              className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
+            >
+              {filtered.map((post) => (
+                <BlogCard key={post.id} post={post} />
+              ))}
+            </motion.div>
+          </AnimatePresence>
+        )}
 
-        {filtered.length === 0 && (
+        {!loading && filtered.length === 0 && (
           <p className="py-12 text-center text-sm text-[var(--color-muted)]">
             No posts found in this category.
           </p>
@@ -135,7 +175,8 @@ export default function CommunityBlogFeed() {
         <div className="mt-8 text-center">
           <a
             href="/blogs"
-            className="btn-base border border-[var(--color-border)] text-[var(--udemy-text)] dark:text-[var(--udemy-dark-text)] hover:bg-[var(--color-neutral-100)] dark:hover:bg-[var(--color-neutral-800)]"
+            aria-label="View all blog posts"
+            className="btn-base border border-[var(--color-border)] text-[var(--udemy-text)] dark:text-[var(--udemy-dark-text)] hover:bg-[var(--color-neutral-100)] dark:hover:bg-[var(--color-neutral-800)] focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
           >
             View All Blogs
             <ArrowRight size={16} />

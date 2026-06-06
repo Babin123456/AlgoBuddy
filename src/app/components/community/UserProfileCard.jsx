@@ -1,47 +1,10 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { FiExternalLink } from "react-icons/fi";
 import { FaGithub, FaLinkedin, FaTwitter, FaDev } from "react-icons/fa6";
 import { useUser } from "@/features/user/UserContext";
-
-function AnimatedCounter({ value, label }) {
-  const [count, setCount] = useState(0);
-  const ref = useRef(null);
-  const hasAnimated = useRef(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !hasAnimated.current) {
-          hasAnimated.current = true;
-          let start = 0;
-          const duration = 800;
-          const step = Math.ceil(value / (duration / 16));
-          const timer = setInterval(() => {
-            start += step;
-            if (start >= value) {
-              setCount(value);
-              clearInterval(timer);
-            } else {
-              setCount(start);
-            }
-          }, 16);
-        }
-      },
-      { threshold: 0.3 }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [value]);
-
-  return (
-    <div ref={ref} className="text-center">
-      <p className="text-xl font-bold text-surface-900 dark:text-white">{count}</p>
-      <p className="text-xs text-surface-500 dark:text-surface-400 uppercase tracking-wider">{label}</p>
-    </div>
-  );
-}
+import AnimatedCounter from "./AnimatedCounter";
 
 const socialIcons = {
   github: { icon: FaGithub, color: "hover:text-gray-900 dark:hover:text-white", href: null },
@@ -82,7 +45,7 @@ export default function UserProfileCard({
           <div className="relative flex-shrink-0">
             <div className="w-16 h-16 rounded-full ring-2 ring-primary/30 dark:ring-primary/40 overflow-hidden flex items-center justify-center bg-surface-200 dark:bg-neutral-700 text-surface-500 dark:text-surface-400 text-xl font-bold">
               {avatarSrc ? (
-                <img src={avatarSrc} alt={displayName} className="w-full h-full object-cover" />
+                <Image src={avatarSrc} alt={`${displayName}'s avatar`} width={64} height={64} unoptimized className="w-full h-full object-cover" />
               ) : (
                 initials
               )}
@@ -111,6 +74,7 @@ export default function UserProfileCard({
               return (
                 <span
                   key={key}
+                  aria-hidden="true"
                   className="w-8 h-8 flex items-center justify-center rounded-full text-surface-400 dark:text-surface-500 cursor-not-allowed"
                 >
                   <Icon className="w-4 h-4" />
@@ -123,6 +87,7 @@ export default function UserProfileCard({
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label={`${displayName}'s ${key} profile`}
                 className={`w-8 h-8 flex items-center justify-center rounded-full text-surface-400 dark:text-surface-500 transition-colors duration-200 ${color}`}
               >
                 <Icon className="w-4 h-4" />

@@ -49,7 +49,56 @@ const teamMembers = [
   },
 ];
 
-export default function CoreTeamSection() {
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.08 },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+};
+
+function CoreTeamSkeleton() {
+  return (
+    <div className="flex lg:flex-col items-center lg:text-center gap-4 lg:gap-3 p-4 rounded-lg bg-white dark:bg-neutral-700/50 border border-surface-200 dark:border-neutral-700">
+      <div className="skeleton-shimmer w-12 h-12 lg:w-16 lg:h-16 rounded-full" />
+      <div className="min-w-0 flex-1 lg:flex-none w-full">
+        <div className="skeleton-shimmer h-4 w-24 mx-auto mb-2" />
+        <div className="skeleton-shimmer h-3 w-16 mx-auto mb-2" />
+        <div className="skeleton-shimmer h-3 w-32 mx-auto hidden lg:block mb-2" />
+        <div className="flex items-center justify-center gap-2 mt-2">
+          <div className="skeleton-shimmer w-7 h-7 rounded-full" />
+          <div className="skeleton-shimmer w-7 h-7 rounded-full" />
+          <div className="skeleton-shimmer w-7 h-7 rounded-full" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function CoreTeamSection({ loading = false }) {
+  if (loading) {
+    return (
+      <div className="rounded-xl bg-surface-50 dark:bg-neutral-800 border border-surface-200 dark:border-neutral-700 shadow-sm p-6 sm:p-8">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="w-10 h-10 rounded-lg skeleton-shimmer" />
+          <div>
+            <div className="skeleton-shimmer h-6 w-28 mb-1" />
+            <div className="skeleton-shimmer h-4 w-52" />
+          </div>
+        </div>
+        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <CoreTeamSkeleton key={i} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -69,13 +118,20 @@ export default function CoreTeamSection() {
         </div>
       </div>
 
-      <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4"
+      >
         {teamMembers.map((member) => (
           <motion.div
             key={member.name}
+            variants={cardVariants}
             whileHover={{ y: -4 }}
             transition={{ type: "spring", stiffness: 300, damping: 15 }}
-            className="flex lg:flex-col items-center lg:text-center gap-4 lg:gap-3 p-4 rounded-lg bg-white dark:bg-neutral-700/50 border border-surface-200 dark:border-neutral-700 shadow-sm hover:shadow-md transition-shadow duration-200"
+            tabIndex={0}
+            className="flex lg:flex-col items-center lg:text-center gap-4 lg:gap-3 p-4 rounded-lg bg-white dark:bg-neutral-700/50 border border-surface-200 dark:border-neutral-700 shadow-sm hover:shadow-md transition-shadow duration-200 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus:outline-none"
           >
             <div className="w-12 h-12 lg:w-16 lg:h-16 rounded-full flex-shrink-0 bg-surface-200 dark:bg-neutral-600 flex items-center justify-center text-surface-600 dark:text-surface-300 font-bold text-sm lg:text-base">
               {member.avatar}
@@ -102,13 +158,15 @@ export default function CoreTeamSection() {
                       : platform === "linkedin"
                         ? FiLinkedin
                         : FiTwitter;
+                  const platformLabel = platform === "github" ? "GitHub" : platform === "linkedin" ? "LinkedIn" : "Twitter";
                   return (
                     <a
                       key={platform}
                       href={url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-7 h-7 flex items-center justify-center rounded-full text-surface-400 dark:text-surface-500 hover:text-surface-700 dark:hover:text-surface-200 transition-colors duration-150"
+                      aria-label={`${member.name}'s ${platformLabel} profile`}
+                      className="w-7 h-7 flex items-center justify-center rounded-full text-surface-400 dark:text-surface-500 hover:text-surface-700 dark:hover:text-surface-200 transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
                     >
                       <Icon className="w-3.5 h-3.5" />
                     </a>
@@ -118,7 +176,7 @@ export default function CoreTeamSection() {
             </div>
           </motion.div>
         ))}
-      </div>
+      </motion.div>
     </motion.div>
   );
 }
