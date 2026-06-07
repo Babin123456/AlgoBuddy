@@ -11,16 +11,24 @@ import CompanyLogos from "@/app/components/practice/CompanyLogos";
 import { practiceData } from "@/lib/practiceData";
 import { useProblemBookmarks } from "@/app/hooks/useProblemBookmarks";
 import { useProgress } from "@/app/hooks/useProgress";
+import { useUser } from "@/features/user/UserContext";
 
 export default function TopicPracticeSheet() {
   const router = useRouter();
   const params = useParams();
+  const { user } = useUser();
   const topicSlug = params?.topic;
 
   const { progress, updateProgress } = useProgress();
   const [selectedProblem, setSelectedProblem] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    if (!user) {
+      router.replace("/login");
+    }
+  }, [user, router]);
 
   const { isBookmarked, toggleBookmark } = useProblemBookmarks();
 

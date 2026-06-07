@@ -12,6 +12,7 @@
  */
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { getAuthenticatedUser } from "@/lib/auth";
 import { checkRateLimit } from "@/lib/rateLimit";
 import { getClientIp } from "@/lib/getClientIp";
 import { jsonResponse } from "@/lib/serverApi";
@@ -225,6 +226,15 @@ function toGeminiContents(messages) {
 
 // ─── POST Handler ─────────────────────────────────────────────────────────────
 export async function POST(request) {
+  const authResult = await getAuthenticatedUser();
+
+  if (!authResult.success) {
+    if (authResult.type === "CONFIG_ERROR" || authResult.type === "AUTH_PROVIDER_ERROR") {
+      return jsonResponse({ error: "Authentication service unavailable" }, 500);
+    }
+    return jsonResponse({ error: "Authentication required" }, 401);
+  }
+
   const ip = getClientIp(request.headers);
   const { allowed, resetAt } = await checkRateLimit(`chatbot:${ip}`);
   if (!allowed) {

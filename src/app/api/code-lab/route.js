@@ -1,3 +1,4 @@
+import { getAuthenticatedUser } from "@/lib/auth";
 import { applyRateLimit } from "@/lib/rateLimit/rateLimitMiddleware";
 import { executeCode } from "@/lib/sandbox/executor";
 import { EXECUTION_STATUS, EXECUTION_MESSAGES } from "@/lib/sandbox/errorCodes";
@@ -8,6 +9,15 @@ export const dynamic = "force-dynamic";
 
 export async function POST(request) {
   try {
+    const authResult = await getAuthenticatedUser();
+
+    if (!authResult.success) {
+      if (authResult.type === "CONFIG_ERROR" || authResult.type === "AUTH_PROVIDER_ERROR") {
+        return jsonResponse({ error: "Authentication service unavailable" }, 500);
+      }
+      return jsonResponse({ error: "Authentication required" }, 401);
+    }
+
     const limitResponse = await applyRateLimit(request);
     if (limitResponse) return limitResponse;
 
