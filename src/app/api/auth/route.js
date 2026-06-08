@@ -207,15 +207,14 @@ export async function POST(req) {
     }
 
     if (action === "signup") {
-      const serviceKey = process.env.SUPABASE_SERVICE_KEY
-        ? String(process.env.SUPABASE_SERVICE_KEY).trim()
-        : null;
-
+      const serviceKey = getValidKey(process.env.SUPABASE_SERVICE_KEY);
       if (!supabaseUrl || !serviceKey) {
         return jsonResponse({ success: false, message: "Auth server is not configured." }, 500);
       }
 
-      const { error } = await supabaseAdmin.auth.admin.createUser({
+      const admin = createClient(supabaseUrl, serviceKey);
+
+      const { error } = await admin.auth.admin.createUser({
         email,
         password,
         email_confirm: true,

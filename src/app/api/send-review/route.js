@@ -31,7 +31,7 @@ export async function POST(request) {
     const ip = getClientIp(request.headers);
 
     const { allowed, remaining, resetAt } =
-      await checkRateLimit(`contact:${ip}`);
+      await checkRateLimit(`review:${ip}`);
     if (!allowed) {
       const retryAfter = Math.ceil((resetAt - Date.now()) / 1000);
       return jsonResponse({ message: "Too many requests. Please try again later." }, 429, {
