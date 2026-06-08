@@ -105,6 +105,13 @@ export default function ArenaPage() {
   const router = useRouter();
 
   useEffect(() => {
+  localStorage.setItem(
+    "arena-show-xp-widget",
+    JSON.stringify(showXPWidget)
+  );
+}, [showXPWidget]);
+
+  useEffect(() => {
     if (!loading && !user) {
       router.replace("/login");
     }
@@ -118,6 +125,7 @@ export default function ArenaPage() {
   const [duelSimulatorOpen, setDuelSimulatorOpen] = useState(false);
   const [selectedOpponent, setSelectedOpponent] = useState(null);
   const [activeDuelProblem, setActiveDuelProblem] = useState("Reverse Linked List");
+  const [showXPWidget, setShowXPWidget] = useState(true);
 
   const [currentUserStats, setCurrentUserStats] = useState({
     name: "Pankaj Singh",
@@ -666,6 +674,13 @@ export default function ArenaPage() {
                 })}
               </div>
             </div>
+
+            <button
+  onClick={() => setShowXPWidget(!showXPWidget)}
+  className="text-xs text-primary font-semibold"
+>
+  {showXPWidget ? "Hide XP Widget" : "Show XP Widget"}
+</button>
 
             {/* XP Progress */}
             <div className="bg-white dark:bg-neutral-800 border border-slate-100 dark:border-neutral-800/80 rounded-2xl p-5 shadow-sm">
