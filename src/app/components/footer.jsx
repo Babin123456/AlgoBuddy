@@ -15,13 +15,12 @@ import {
 
 import TermsOfServiceModal from '@/app/components/termsOfServicesModal'
 import CookiePolicyModal from '@/app/components/cookie'
-import CodeOfConductModel from '@/app/components/CodeOfConductModel'
+
 
 const Footer = () => {
   
   const [showTermsModal, setShowTermsModal] = useState(false)
   const [showCookieModal, setShowCookieModal] = useState(false)
-  const [ShowShowOfConduct, setShowCodeOfConductModal] = useState(false)
   const [newsletterEmail, setNewsletterEmail] = useState("");
   const [newsletterEmailError, setNewsletterEmailError] = useState("");
 
@@ -250,7 +249,9 @@ const Footer = () => {
             <div>
               <h3 className={footerHeading}>Legal</h3>
               <div className="space-y-4">
-                <Link href="/privacy">
+                <Link href="/privacy"
+                  className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors duration-300 text-sm"
+                >
                   Privacy Policy
                 </Link>
                 <button
@@ -265,12 +266,11 @@ const Footer = () => {
                 >
                   Cookies Policy
                 </button>
-                <button
-                  onClick={() => setShowCodeOfConductModal(true)}
-                  className={footerLink}
+                <Link href="/code-of-conduct"
+                  className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors duration-300 text-sm"
                 >
-                  Code of Conduct
-                </button>
+                  Code Of Conduct
+                </Link>
               </div>
             </div>
           </div>
@@ -295,10 +295,7 @@ const Footer = () => {
         isOpen={showCookieModal}
         onClose={() => setShowCookieModal(false)}
       />
-      <CodeOfConductModel
-        isOpen={ShowShowOfConduct}
-        onClose={() => setShowCodeOfConductModal(false)}
-      />
+      
     </>
   )
 }
