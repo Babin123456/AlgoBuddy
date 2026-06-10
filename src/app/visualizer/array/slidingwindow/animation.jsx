@@ -1,12 +1,11 @@
 "use client";
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import { gsap } from "gsap";
 import ResetButton from "@/app/components/ui/resetButton";
 import GoButton from "@/app/components/ui/goButton";
 import PlaybackControls from "@/app/components/ui/PlaybackControls";
 import useVisualizerKeyboard from "@/app/hooks/useVisualizerKeyboard";
 import { useAnimationEngine } from "@/lib/visualizer/useAnimationEngine";
-import html2canvas from "html2canvas";
 import { 
   generateStatesFixedMax, 
   generateStatesFixedAvg, 
@@ -105,12 +104,6 @@ const Animation = () => {
 
     const state = stateQueueRef.current[currentStateIdxRef.current];
     const delay = 1500 / 1; // Replace speedRef.current with actual speed value
-
-  const link = document.createElement("a");
-  link.download = "sliding-window-visualization.png";
-  link.href = canvas.toDataURL("image/png");
-  link.click();
-};
 
     elementRefs.current.forEach((ref, index) => {
       if (!ref) return;
@@ -352,7 +345,7 @@ Please explain exactly what is happening in this step in detail.`;
       )}
 
       {dataArray.length > 0 && (
-         <div ref={visualizerRef}>
+         <div ref={animationRef}>
         <div className="max-w-5xl mx-auto space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-white dark:bg-gray-800 p-5 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col justify-center">
