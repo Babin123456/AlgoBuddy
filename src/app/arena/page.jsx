@@ -97,6 +97,17 @@ const ACHIEVEMENT_BADGES = [
   { title: "Arena Champion", icon: "⚔️" },
 ];
 
+const LEARNING_GOALS = {
+  weekly: {
+    completed: 8,
+    target: 10,
+  },
+  monthly: {
+    completed: 32,
+    target: 50,
+  },
+};
+
 function getInitials(name) {
   if (!name) return "??";
   const cleanName = name.includes("@") ? name.split("@")[0] : name;
@@ -731,6 +742,49 @@ export default function ArenaPage() {
         </p>
       </div>
     ))}
+  </div>
+</div>
+
+{/* Learning Goal Tracker */}
+<div className="bg-white dark:bg-neutral-800 border border-slate-100 dark:border-neutral-800/80 rounded-2xl p-5 shadow-sm">
+  <div className="flex items-center justify-between mb-4">
+    <h3 className="text-sm font-bold">
+      🎯 Learning Goals
+    </h3>
+    <span className="text-[10px] text-slate-400">
+      Weekly & Monthly
+    </span>
+  </div>
+
+  <div className="space-y-4">
+    <div>
+      <div className="flex justify-between text-xs mb-1">
+        <span>Weekly Goal</span>
+        <span>8 / 10 Problems</span>
+      </div>
+      <div className="w-full bg-slate-200 rounded-full h-2">
+        <div className="bg-green-500 h-2 rounded-full w-[80%]" />
+      </div>
+    </div>
+
+    <div>
+      <div className="flex justify-between text-xs mb-1">
+        <span>Monthly Goal</span>
+        <span>32 / 50 Problems</span>
+      </div>
+      <div className="w-full bg-slate-200 rounded-full h-2">
+        <div className="bg-blue-500 h-2 rounded-full w-[64%]" />
+      </div>
+    </div>
+
+    <div className="p-3 rounded-xl bg-yellow-50 border border-yellow-200">
+      <p className="text-xs font-semibold">
+        🏅 Next Milestone Badge
+      </p>
+      <p className="text-[10px] text-slate-500">
+        Complete 50 monthly problems to unlock Goal Crusher Badge
+      </p>
+    </div>
   </div>
 </div>
 
