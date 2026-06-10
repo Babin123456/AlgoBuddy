@@ -76,41 +76,7 @@ export async function proxy(request) {
     }
   }
 
-  return supabaseResponse;
-}
     return supabaseResponse;
-  }
-
-  // A server client is created per-request so that session cookies can be
-  // refreshed when the access token is close to expiry. The setAll callback
-  // propagates the new cookies into both the outgoing request and response so
-  // that server components and client components see consistent session state.
-  const supabase = createServerClient(
-    supabaseConfig.supabaseUrl,
-    supabaseConfig.supabaseAnonKey,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value),
-          );
-          supabaseResponse = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options),
-          );
-        },
-      },
-    },
-  );
-
-  // Calling getUser() triggers a token refresh if the access token is expired.
-  // This must not be removed — without it, sessions silently expire mid-browse.
-  await supabase.auth.getUser();
-
-  return supabaseResponse;
 }
 
 export const config = {
