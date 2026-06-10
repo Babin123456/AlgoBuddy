@@ -26,17 +26,7 @@ const Animation = () => {
   const [pendingStart, setPendingStart] = useState(false);
   const [showQuiz, setShowQuiz] = useState(false);
   const [discussion, setDiscussion] = useState("");
-
-  const {
-    isPaused,
-    isPausedRef,
-    speed,
-    speedRef,
-    setSpeed,
-    togglePlayPause,
-    increaseSpeed,
-    decreaseSpeed,
-  } = usePlayback(() => 1);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const animationRef = useRef(null);
   const wasPausedRef = useRef(false);
@@ -51,7 +41,31 @@ const Animation = () => {
     violation: false, success: false, done: false
   });
 
-  const onStep = useCallback((state) => {
+  // Initialize engine first
+  const engine = useAnimationEngine({ steps, onStep: handleStep, initialSpeed: 1000 });
+  const currentStepData = steps[engine.currentStep];
+
+  const handleReset = useCallback(() => {
+    engine.reset();
+    setDataArray([]);
+    setVisualState({
+      left: -1, right: -1, current: null, best: null,
+      explanation: "", activeWindow: [-1, -1],
+      violation: false, success: false, done: false
+    });
+    setSteps([]);
+    setMessage("");
+    setMessageType("");
+    setIsAnimating(false);
+    
+    elementRefs.current.forEach((ref) => {
+      if (ref) {
+        gsap.to(ref, { backgroundColor: "#E5E7EB", borderColor: "#D1D5DB", color: "#1F2937", duration: 0 });
+      }
+    });
+  }, [engine]);
+
+  const handleStep = useCallback((state) => {
     setVisualState({
       left: state.left,
       right: state.right,
@@ -63,29 +77,6 @@ const Animation = () => {
       success: state.success,
       done: state.done
     });
-
-  useVisualizerReset(handleReset);
-
-// generators imported from slidingWindowLogic.js
-
-  const animateStep = useCallback(() => {
-    if (currentStateIdxRef.current >= stateQueueRef.current.length) {
-      setIsAnimating(false);
-      setMessage("Visualization completed.");
-      setMessageType("success");
-      setShowQuiz(true);
-
-      return;
-    }
-
-    const state = stateQueueRef.current[currentStateIdxRef.current];
-    const delay = 1500 / speedRef.current;
-
-    setLeftPointer(state.left);
-    setRightPointer(state.right);
-    setCurrentResult(state.current);
-    setBestResult(state.best);
-    setStepExplanation(state.explanation);
 
     // GSAP highlighting
     elementRefs.current.forEach((ref, index) => {
@@ -111,33 +102,9 @@ const Animation = () => {
       setMessage("Visualization completed.");
       setMessageType("success");
       setShowQuiz(true);
-    } else {
-      setMessage("");
-      setMessageType("");
+      setIsAnimating(false);
     }
   }, []);
-
-  const engine = useAnimationEngine({ steps, onStep, initialSpeed: 1000 });
-  const currentStepData = steps[engine.currentStep];
-
-  const handleReset = useCallback(() => {
-    engine.reset();
-    setDataArray([]);
-    setVisualState({
-      left: -1, right: -1, current: null, best: null,
-      explanation: "", activeWindow: [-1, -1],
-      violation: false, success: false, done: false
-    });
-    setSteps([]);
-    setMessage("");
-    setMessageType("");
-    
-    elementRefs.current.forEach((ref) => {
-      if (ref) {
-        gsap.to(ref, { backgroundColor: "#E5E7EB", borderColor: "#D1D5DB", color: "#1F2937", duration: 0 });
-      }
-    });
-  }, [engine]);
 
   const handleGo = (e) => {
     e.preventDefault();
@@ -178,6 +145,7 @@ const Animation = () => {
     }
 
     setDataArray(parsedArray);
+    setIsAnimating(true);
     
     let generatedStates = [];
     if (problemType === PROBLEMS.FIXED_MAX) {
@@ -431,7 +399,7 @@ Please explain exactly what is happening in this step in detail.`;
                     <div
                       ref={(el) => (elementRefs.current[index] = el)}
                       className={`w-14 h-14 md:w-16 md:h-16 flex items-center justify-center rounded-lg border-2 transition-colors duration-200 ${getFontSize(element)} shadow-sm`}
-                      style={{ backgroundColor: "#E5E7EB", borderColor: "#D1D5DB" }} // Default initial state
+                      style={{ backgroundColor: "#E5E7EB", borderColor: "#D1D5DB" }}
                     >
                       {element}
                     </div>
