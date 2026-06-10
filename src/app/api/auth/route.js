@@ -53,6 +53,34 @@ const redis =
     ? Redis.fromEnv()
     : null;
 
+let isRedisOffline = false;
+let redisOfflineUntil = 0;
+const COOLDOWN_MS = 10000;
+
+function markRedisOffline(err) {
+  if (!isRedisOffline) {
+    isRedisOffline = true;
+    console.error(`[auth] Redis connection failed, activating in-memory fallback. Error: ${err.message || err}`);
+  }
+  redisOfflineUntil = Date.now() + COOLDOWN_MS;
+}
+
+function markRedisOnline() {
+  if (isRedisOffline) {
+    isRedisOffline = false;
+    console.log("[auth] Redis connection restored, resuming Redis-based auth lockout.");
+  }
+}
+
+function shouldTryRedis() {
+  if (!redis) return false;
+  if (!isRedisOffline) return true;
+  if (Date.now() >= redisOfflineUntil) {
+    return true;
+  }
+  return false;
+}
+
 function normalizeEmail(email) {
   return String(email || "").trim().toLowerCase();
 }
@@ -68,9 +96,14 @@ function failKey(email) {
 async function isEmailLocked(email) {
   if (!email) return false;
 
-  if (redis) {
-    const value = await redis.get(lockKey(email));
-    return Boolean(value);
+  if (shouldTryRedis()) {
+    try {
+      const value = await redis.get(lockKey(email));
+      markRedisOnline();
+      return Boolean(value);
+    } catch (err) {
+      markRedisOffline(err);
+    }
   }
 
   const until = memoryLockouts.get(email);
@@ -85,19 +118,25 @@ async function isEmailLocked(email) {
 async function recordLoginFailure(email) {
   if (!email) return { locked: false, remaining: LOGIN_FAILURE_THRESHOLD };
 
-  if (redis) {
-    const attempts = await redis.incr(failKey(email));
-    // Ensure the failure counter expires.
-    if (attempts === 1) {
-      await redis.expire(failKey(email), LOGIN_FAILURE_WINDOW_SECONDS);
+  if (shouldTryRedis()) {
+    try {
+      const attempts = await redis.incr(failKey(email));
+      // Ensure the failure counter expires.
+      if (attempts === 1) {
+        await redis.expire(failKey(email), LOGIN_FAILURE_WINDOW_SECONDS);
+      }
+      const remaining = Math.max(0, LOGIN_FAILURE_THRESHOLD - attempts);
+      if (attempts >= LOGIN_FAILURE_THRESHOLD) {
+        await redis.set(lockKey(email), "1", { ex: LOGIN_LOCK_SECONDS });
+        await redis.del(failKey(email));
+        markRedisOnline();
+        return { locked: true, remaining: 0 };
+      }
+      markRedisOnline();
+      return { locked: false, remaining };
+    } catch (err) {
+      markRedisOffline(err);
     }
-    const remaining = Math.max(0, LOGIN_FAILURE_THRESHOLD - attempts);
-    if (attempts >= LOGIN_FAILURE_THRESHOLD) {
-      await redis.set(lockKey(email), "1", { ex: LOGIN_LOCK_SECONDS });
-      await redis.del(failKey(email));
-      return { locked: true, remaining: 0 };
-    }
-    return { locked: false, remaining };
   }
 
   const now = Date.now();
@@ -129,10 +168,15 @@ async function recordLoginFailure(email) {
 
 async function clearLoginFailures(email) {
   if (!email) return;
-  if (redis) {
-    await redis.del(failKey(email));
-    await redis.del(lockKey(email));
-    return;
+  if (shouldTryRedis()) {
+    try {
+      await redis.del(failKey(email));
+      await redis.del(lockKey(email));
+      markRedisOnline();
+      return;
+    } catch (err) {
+      markRedisOffline(err);
+    }
   }
   memoryFailures.delete(email);
   memoryLockouts.delete(email);
@@ -148,7 +192,7 @@ export async function POST(req) {
     const isProduction = process.env.NODE_ENV === "production";
     const hasRedis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN;
     if (isProduction && !hasRedis) {
-      return jsonResponse({ success: false, message: "Server misconfigured: Redis environment variables are not set." }, 500);
+      console.warn("Production environment is missing Redis variables; using in-memory rate limiters/lockouts.");
     }
 
     let body;
