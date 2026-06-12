@@ -18,4 +18,4 @@ supabase:
   url: ${SUPABASE_URL:https://your-project-id.supabase.co}
 
 app:
-  allowed-origins: ${ALLOWED_ORIGINS:http://localhost:3000,https://algobuddy.vercel.app}
+  allowed-origins: ${ALLOWED_ORIGINS:http://localhost:3000,https://algobuddy.vercel.app,https://algobuddy.me,https://www.algobuddy.me}
