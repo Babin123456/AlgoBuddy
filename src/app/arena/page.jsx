@@ -179,17 +179,21 @@ export default function ArenaPage() {
 
   // Modals state
   const [matchmakingOpen, setMatchmakingOpen] = useState(false);
+  const [createDuelOpen, setCreateDuelOpen] = useState(false);
 
-  // Fix for browser back button from Matchmaking page (Issue #1333)
+  // Fix for browser back button from Matchmaking modal (Issue #1333)
+  // Fix for browser back button from Create Custom Lobby panel (Issue #1342)
   useEffect(() => {
     const handlePopState = (e) => {
       if (matchmakingOpen) {
         setMatchmakingOpen(false);
+      } else if (createDuelOpen) {
+        setCreateDuelOpen(false);
       }
     };
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
-  }, [matchmakingOpen]);
+  }, [matchmakingOpen, createDuelOpen]);
 
   const openMatchmakingModal = () => {
     if (!ensureLoggedIn()) return;
@@ -204,7 +208,18 @@ export default function ArenaPage() {
     }
   };
 
-  const [createDuelOpen, setCreateDuelOpen] = useState(false);
+  const openCreateDuelModal = () => {
+    if (!ensureLoggedIn()) return;
+    window.history.pushState({ modal: "createDuel" }, "", window.location.href);
+    setCreateDuelOpen(true);
+  };
+
+  const closeCreateDuelModal = () => {
+    setCreateDuelOpen(false);
+    if (window.history.state?.modal === "createDuel") {
+      window.history.back();
+    }
+  };
   const [duelSimulatorOpen, setDuelSimulatorOpen] = useState(false);
   const [selectedOpponent, setSelectedOpponent] = useState(null);
   const [activeDuelProblem, setActiveDuelProblem] = useState("Reverse Linked List");
@@ -387,10 +402,7 @@ export default function ArenaPage() {
                         Find Match
                       </button>
                       <button
-                        onClick={() => {
-                          if (!ensureLoggedIn()) return;
-                          setCreateDuelOpen(true);
-                        }}
+                        onClick={openCreateDuelModal}
                         className="px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl text-xs font-bold flex items-center gap-1.5 transition"
                       >
                         <Swords size={14} />
@@ -702,7 +714,7 @@ export default function ArenaPage() {
 
                 {activeTab === "friend" && (
                   <button
-                    onClick={() => setCreateDuelOpen(true)}
+                    onClick={openCreateDuelModal}
                     className="px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl text-xs font-bold shadow-md shadow-primary/10 transition"
                   >
                     Create Custom Lobby
@@ -904,7 +916,7 @@ export default function ArenaPage() {
 
       <CreateDuelModal
         isOpen={createDuelOpen}
-        onClose={() => setCreateDuelOpen(false)}
+        onClose={closeCreateDuelModal}
         onCreateMatch={handleCreateMatchLaunch}
       />
     </section>
