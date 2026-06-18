@@ -8,14 +8,8 @@ import com.algobuddy.backend.entity.UserProgress;
 import com.algobuddy.backend.repository.UserPracticeStatsRepository;
 import com.algobuddy.backend.repository.UserProgressRepository;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
+
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -29,7 +23,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PracticeService {
 
-    private static final Logger log = LoggerFactory.getLogger(PracticeService.class);
 
     private final UserProgressRepository progressRepository;
     private final UserPracticeStatsRepository statsRepository;
@@ -46,7 +39,7 @@ public class PracticeService {
                 ));
 
         UserPracticeStats stats = statsRepository.findById(userId)
-                .orElse(new UserPracticeStats(userId, 0, 0, null, 0, 0));
+                .orElse(new UserPracticeStats(userId, 0, 0, null, 0));
 
         OffsetDateTime now = OffsetDateTime.now();
         OffsetDateTime startOfDay = now.toLocalDate().atStartOfDay(now.getOffset()).toOffsetDateTime();
@@ -133,7 +126,7 @@ public class PracticeService {
     @Transactional
     public void updateStreak(UUID userId) {
         UserPracticeStats stats = statsRepository.findById(userId)
-                .orElse(new UserPracticeStats(userId, 0, 0, null, 0, 0));
+                .orElse(new UserPracticeStats(userId, 0, 0, null, 0));
 
         LocalDate today = LocalDate.now();
         LocalDate lastActive = stats.getLastActiveDate();
