@@ -102,7 +102,29 @@ export const practiceData = [
               pitfalls: "Requires auxiliary linear memory space, making it less memory-efficient than in-place algorithms like Quick Sort.",
               tip: "Merge Sort is highly stable (preserves original order of duplicates) and is widely used for sorting Linked Lists due to constant space merging."
             }
-          }
+          },
+          {
+            id: "maximum-subarray",
+            name: "Maximum Subarray (Kadane's Algorithm)",
+            difficulty: "Medium",
+            companies: ["amazon", "microsoft", "google", "meta", "adobe", "flipkart", "swiggy", "zomato"],
+            practiceUrl: "https://leetcode.com/problems/maximum-subarray/",
+            visualizerUrl: "/visualizer/array/maxsubarray",
+            theory: {
+              summary: "Find the contiguous subarray within a one-dimensional array of numbers that has the largest sum, using Kadane's Algorithm for an optimal O(N) solution.",
+              steps: [
+                "Initialize currentSum = 0 and maxSum = -Infinity (or the first element).",
+                "Traverse the array from left to right.",
+                "At each element, add it to currentSum: currentSum = currentSum + array[i].",
+                "Update maxSum = max(maxSum, currentSum) to record the best sum found so far.",
+                "If currentSum becomes negative, reset it to 0, since a negative sum can never help a future subarray.",
+                "After traversing the full array, maxSum holds the answer."
+              ],
+              complexity: { time: "O(N)", space: "O(1)" },
+              pitfalls: "Resetting currentSum to 0 incorrectly when all elements are negative — in that case the answer is simply the largest (least negative) single element, not 0. Always initialize maxSum with the first element, not 0.",
+              tip: "Kadane's Algorithm is a classic example of Dynamic Programming with O(1) space: it only needs the answer 'so far', not a full DP table. It's one of the most frequently asked array problems in interviews."
+            }
+          },
         ]
       },
       {
