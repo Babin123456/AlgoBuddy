@@ -20,6 +20,7 @@ import {
 import PracticeSidebar from "@/app/components/practice/PracticeSidebar";
 import PracticeRightSidebar from "@/app/components/practice/PracticeRightSidebar";
 import PracticeSessionBanner from "@/app/components/practice/PracticeSessionBanner";
+import PracticeDashboard from "@/app/components/practice/PracticeDashboard";
 import CompanyLogos from "@/app/components/practice/CompanyLogos";
 import TheoryDrawer from "@/app/components/practice/TheoryDrawer";
 import BackToTop from "@/app/components/ui/backtotop";
@@ -36,7 +37,7 @@ export default function PracticePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Views: 'problem-list', 'topic-wise', 'company-wise', 'bookmarks', 'recent-solved'
+  // Views: 'dashboard', 'problem-list', 'topic-wise', 'company-wise', 'bookmarks', 'recent-solved'
   const [activeView, setActiveView] = useState("problem-list");
   const [activeTab, setActiveTab] = useState("problems"); // 'problems', 'description', 'resources', 'discussion'
   
@@ -119,12 +120,21 @@ export default function PracticePage() {
     let easyTotal = 0;
     let mediumTotal = 0;
     let hardTotal = 0;
+    let easySolved = 0;
+    let mediumSolved = 0;
+    let hardSolved = 0;
     const uniqueCompanies = new Set();
 
     allProblems.forEach((prob) => {
       const status = getStatus(prob.id);
-      if (status === "Completed") solved++;
-      else if (status === "In Progress") attempted++;
+      if (status === "Completed") {
+        solved++;
+        if (prob.difficulty === "Easy") easySolved++;
+        else if (prob.difficulty === "Medium") mediumSolved++;
+        else if (prob.difficulty === "Hard") hardSolved++;
+      } else if (status === "In Progress") {
+        attempted++;
+      }
 
       if (prob.difficulty === "Easy") easyTotal++;
       else if (prob.difficulty === "Medium") mediumTotal++;
@@ -159,6 +169,9 @@ export default function PracticePage() {
       easyTotal,
       mediumTotal,
       hardTotal,
+      easySolved,
+      mediumSolved,
+      hardSolved,
       companiesCount: uniqueCompanies.size
     };
   }, [allProblems, progress, getStatus, streakData]);
@@ -377,7 +390,33 @@ export default function PracticePage() {
         <div className="flex-1 min-w-0 space-y-6">
           
           {/* Main dashboard rendering based on activeView */}
-          {activeView === "my-sheet" ? (
+          {activeView === "dashboard" ? (
+            <PracticeDashboard
+              dailyChallenge={dailyChallenge}
+              solvedCount={stats.solved}
+              dailySolved={stats.dailySolved}
+              weeklySolved={stats.weeklySolved}
+              monthlySolved={stats.monthlySolved}
+              dailyGoal={3}
+              weeklyGoal={10}
+              monthlyGoal={50}
+              streakDays={currentStreak}
+              bestStreak={longestStreak}
+              solved={stats.solved}
+              attempted={stats.attempted}
+              remaining={stats.remaining}
+              total={stats.total}
+              estimatedTime={stats.estimatedTime}
+              easyCount={stats.easySolved}
+              mediumCount={stats.mediumSolved}
+              hardCount={stats.hardSolved}
+              totalEasy={stats.easyTotal}
+              totalMed={stats.mediumTotal}
+              totalHard={stats.hardTotal}
+              companiesCount={stats.companiesCount}
+              activityData={activityData}
+            />
+          ) : activeView === "my-sheet" ? (
             /* ── MY SHEET VIEW ─────────────────────────────────────── */
             <section className="space-y-5">
               {/* Header */}
@@ -558,31 +597,6 @@ export default function PracticePage() {
                 duration={stats.estimatedTime}
                 onBackToSessions={() => toast.success("You are at the main problem list dashboard.")}
               />
-
-              {dailyChallenge && (
-                  <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-5 text-white shadow-lg">
-                    <h3 className="text-lg font-black">
-                      🎯 Challenge of the Day
-                    </h3>
-
-                    <p className="mt-2 font-semibold">
-                      {dailyChallenge.name}
-                    </p>
-
-                    <p className="text-sm opacity-90">
-                      Difficulty: {dailyChallenge.difficulty}
-                    </p>
-
-                    <a
-                      href={dailyChallenge.practiceUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-block mt-3 px-4 py-2 bg-white text-purple-600 rounded-lg font-bold"
-                    >
-                      Solve Challenge
-                    </a>
-                  </div>
-                )}
 
               {/* Tab navigation */}
               <div className="flex border-b border-slate-200 dark:border-neutral-800">
@@ -1153,19 +1167,21 @@ export default function PracticePage() {
         </div>
 
         {/* Right Sidebar */}
-        <PracticeRightSidebar 
-          solved={stats.solved}
-          attempted={stats.attempted}
-          remaining={stats.remaining}
-          total={stats.total}
-          estimatedTime={stats.estimatedTime}
-          easyCount={stats.easyTotal}
-          mediumCount={stats.mediumTotal}
-          hardCount={stats.hardTotal}
-          companiesCount={stats.companiesCount}
-          userName={userName}
-          activityData={activityData}
-        />
+        {activeView !== "dashboard" && (
+          <PracticeRightSidebar 
+            solved={stats.solved}
+            attempted={stats.attempted}
+            remaining={stats.remaining}
+            total={stats.total}
+            estimatedTime={stats.estimatedTime}
+            easyCount={stats.easyTotal}
+            mediumCount={stats.mediumTotal}
+            hardCount={stats.hardTotal}
+            companiesCount={stats.companiesCount}
+            userName={userName}
+            activityData={activityData}
+          />
+        )}
 
       </div>
 
