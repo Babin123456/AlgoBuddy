@@ -125,6 +125,7 @@ public class PracticeService {
 
     @Transactional
     public void updateStreak(UUID userId) {
+        statsRepository.acquireStreakUpdateLock(userId);
         statsRepository.upsertStreakAtomic(userId, LocalDate.now());
     }
 }

@@ -13,6 +13,9 @@ import java.util.UUID;
 @Repository
 public interface UserPracticeStatsRepository extends JpaRepository<UserPracticeStats, UUID> {
 
+    @Query(value = "SELECT pg_advisory_xact_lock(hashtext('streak_update:' || :userId::text)::bigint)", nativeQuery = true)
+    void acquireStreakUpdateLock(@Param("userId") UUID userId);
+
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = """
         INSERT INTO user_practice_stats (user_id, current_streak, longest_streak, last_active_date, visualized_count)
