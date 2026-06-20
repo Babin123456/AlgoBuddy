@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useUser } from "@/features/user/UserContext";
 import { supabase } from "@/lib/supabase";
 import ProfileProgress from "@/app/components/ui/ProfileProgress";
-import { Save, User as UserIcon, BookOpen, GraduationCap, Code, Link2, Github, Linkedin, ArrowLeft } from "lucide-react";
+import { Save, User as UserIcon, BookOpen, GraduationCap, Code, Link2, Github, Linkedin, ArrowLeft, Bell } from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";
 
@@ -20,7 +20,8 @@ export default function ProfilePage() {
     skills: "",
     resume_link: "",
     github_profile: "",
-    linkedin_profile: ""
+    linkedin_profile: "",
+    email_notifications: true
   });
 
   useEffect(() => {
@@ -35,7 +36,8 @@ export default function ProfilePage() {
         skills: meta.skills || "",
         resume_link: meta.resume_link || "",
         github_profile: meta.github_profile || "",
-        linkedin_profile: meta.linkedin_profile || ""
+        linkedin_profile: meta.linkedin_profile || "",
+        email_notifications: meta.email_notifications !== false
       });
     }
   }, [user, loading, router]);
@@ -225,6 +227,33 @@ export default function ProfilePage() {
                       />
                     </div>
                   </div>
+                </div>
+
+                <h2 className="text-xl font-semibold text-surface-900 dark:text-white border-b border-surface-200 dark:border-surface-800 pb-4 mt-8">
+                  Notifications
+                </h2>
+
+                <div className="space-y-4">
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="email_notifications"
+                      checked={formData.email_notifications}
+                      onChange={(e) =>
+                        setFormData(prev => ({ ...prev, email_notifications: e.target.checked }))
+                      }
+                      className="w-5 h-5 rounded border-surface-300 text-primary focus:ring-primary/20"
+                    />
+                    <div>
+                      <span className="flex items-center gap-2 text-sm font-medium text-surface-700 dark:text-surface-300">
+                        <Bell className="w-4 h-4" />
+                        Email notifications for application updates
+                      </span>
+                      <p className="text-xs text-surface-400 mt-0.5">
+                        Receive an email when your application status changes (accepted/rejected)
+                      </p>
+                    </div>
+                  </label>
                 </div>
               </div>
               
