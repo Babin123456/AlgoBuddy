@@ -29,6 +29,7 @@ export default function PlaybackControls({
       {/* Play/Pause Button & Frame Stepping */}
       {showPlayPause && (
         <div className="flex items-center gap-2 w-full sm:w-auto justify-center bg-slate-950/70 p-1.5 rounded-full border border-slate-800/80 shadow-inner">
+
           {onStepBackward && (
             <button
               type="button"
