@@ -120,6 +120,7 @@ const sections = [
   },
   {
     title: "Array",
+    slug: "array",
     desc: "Searching & sorting algorithms on contiguous memory",
     icon: (
       <svg
@@ -172,6 +173,7 @@ const sections = [
   },
   {
     title: "Recursion",
+    slug: "recursion",
     desc: "Understand stack frames, call stacks, base cases, and tree recursion through animated execution flow",
     icon: (
       <svg
@@ -212,6 +214,7 @@ const sections = [
   },
   {
     title: "Stack",
+    slug: "stack",
     desc: "LIFO operations, polish notations & implementations",
     icon: (
       <svg
@@ -268,6 +271,7 @@ const sections = [
   },
   {
     title: "Queue",
+    slug: "queue",
     desc: "FIFO operations, variants & implementations",
     icon: (
       <svg
@@ -338,6 +342,7 @@ const sections = [
   },
   {
     title: "Linked List",
+    slug: "linkedlist",
     desc: "Singly, doubly, circular — traversal to merge",
     icon: (
       <svg
@@ -425,6 +430,7 @@ const sections = [
   },
   {
     title: "Tree",
+    slug: "tree",
     desc: "BST, AVL, traversals, tries & advanced trees",
     icon: (
       <svg
@@ -563,6 +569,7 @@ const sections = [
   },
   {
     title: "HashMap",
+    slug: "hashmap",
     desc: "Key-value pairs with hash function and collision handling",
     icon: (
       <svg
@@ -598,6 +605,7 @@ const sections = [
   },
   {
     title: "Graph",
+    slug: "graph",
     desc: "BFS, DFS, shortest paths, MST & topological sort",
     icon: (
       <svg
