@@ -144,12 +144,17 @@ export default function DuelSimulatorModal({ isOpen, onClose, opponent, currentU
       }
     });
 
-    newSocket.on("opponent_code_update", (data) => {
-      setOppCode(data.code);
+    newSocket.on("opponent_typing_status", (data) => {
+      if (data.isTyping) {
+        setOppCode("// Opponent is typing...");
+      } else {
+        setOppCode("// Opponent is thinking...");
+      }
     });
 
     newSocket.on("opponent_test_submit", () => {
       setOppStatus("Running tests...");
+      setOppCode("// Opponent is executing code...");
       addLog("Opponent is executing code.");
     });
 
