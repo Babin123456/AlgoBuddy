@@ -52,6 +52,12 @@ export default function SmartRevisionFlashcards() {
   const [weeklyScore, setWeeklyScore] = useState(0);
   const [monthlyScore, setMonthlyScore] = useState(0);
   const [personalBest, setPersonalBest] = useState(0);
+  const [completedCards, setCompletedCards] = useState(0);
+  const [easyCompleted, setEasyCompleted] = useState(0);
+  const [mediumCompleted, setMediumCompleted] = useState(0);
+  const [hardCompleted, setHardCompleted] = useState(0);
+  const [streak, setStreak] = useState(1);
+  const [history, setHistory] = useState([]);
 
   const topics = [
   "All",
@@ -90,6 +96,16 @@ const difficultyPoints = {
   Hard: 20,
 };
 
+const totalCards =
+  flashcards.Easy.length +
+  flashcards.Medium.length +
+  flashcards.Hard.length;
+
+const progressPercentage = Math.min(
+  (completedCards / totalCards) * 100,
+  100
+);
+
   const nextCard = () => {
   const points = difficultyPoints[difficulty];
 
@@ -98,6 +114,25 @@ const difficultyPoints = {
   setTotalScore(newTotal);
   setWeeklyScore((prev) => prev + points);
   setMonthlyScore((prev) => prev + points);
+
+  setCompletedCards((prev) => prev + 1);
+
+if (difficulty === "Easy") {
+  setEasyCompleted((prev) => prev + 1);
+}
+
+if (difficulty === "Medium") {
+  setMediumCompleted((prev) => prev + 1);
+}
+
+if (difficulty === "Hard") {
+  setHardCompleted((prev) => prev + 1);
+}
+
+setHistory((prev) => [
+  ...prev,
+  currentCards[index].topic,
+]);
 
   if (newTotal > personalBest) {
     setPersonalBest(newTotal);
@@ -238,6 +273,50 @@ const difficultyPoints = {
       <p className="mt-3 text-sm text-green-400">
   Current Difficulty Reward: +{difficultyPoints[difficulty]} points
 </p>
+
+<div className="mt-5 bg-slate-800 p-4 rounded-lg">
+  <h3 className="font-bold text-lg mb-3">
+    Revision Analytics
+  </h3>
+
+  <p>Completed Cards: {completedCards}</p>
+
+  <p>Easy Completed: {easyCompleted}</p>
+
+  <p>Medium Completed: {mediumCompleted}</p>
+
+  <p>Hard Completed: {hardCompleted}</p>
+
+  <p>Daily Streak: 🔥 {streak} Days</p>
+</div>
+
+<div className="mt-4">
+  <div className="flex justify-between text-sm mb-1">
+    <span>Overall Progress</span>
+    <span>{progressPercentage.toFixed(0)}%</span>
+  </div>
+
+  <div className="w-full bg-slate-700 rounded-full h-3">
+    <div
+      className="bg-green-500 h-3 rounded-full transition-all"
+      style={{
+        width: `${progressPercentage}%`,
+      }}
+    />
+  </div>
+</div>
+
+<div className="mt-4">
+  <h3 className="font-semibold mb-2">
+    Revision History
+  </h3>
+
+  <ul className="text-sm text-gray-300">
+    {history.slice(-5).map((item, idx) => (
+      <li key={idx}>• {item}</li>
+    ))}
+  </ul>
+</div>
 
       <div className="mt-5 flex gap-3">
   <button
