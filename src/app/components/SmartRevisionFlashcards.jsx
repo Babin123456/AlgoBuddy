@@ -45,10 +45,40 @@ const flashcards = {
 
 export default function SmartRevisionFlashcards() {
   const [difficulty, setDifficulty] = useState("Easy");
+  const [selectedTopic, setSelectedTopic] = useState("All");
   const [index, setIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
 
-  const currentCards = flashcards[difficulty];
+  const topics = [
+  "All",
+  "Array",
+  "Stack",
+  "Binary Search",
+  "Merge Sort",
+  "AVL Tree",
+  "Dynamic Programming",
+];
+
+  const currentCards =
+  selectedTopic === "All"
+    ? flashcards[difficulty]
+    : flashcards[difficulty].filter(
+        (card) => card.topic === selectedTopic
+      );
+
+      if (currentCards.length === 0) {
+  return (
+    <div className="bg-slate-900 text-white p-6 rounded-xl shadow-lg max-w-xl mx-auto">
+      <h2 className="text-2xl font-bold mb-4">
+        Smart Revision Flashcards
+      </h2>
+
+      <p className="text-gray-400">
+        No flashcards available for this topic.
+      </p>
+    </div>
+  );
+}
 
   const nextCard = () => {
     setIndex((index + 1) % currentCards.length);
@@ -113,6 +143,32 @@ export default function SmartRevisionFlashcards() {
       </p>
     </>
   )}
+</div>
+
+<div className="mt-5">
+  <h3 className="text-sm text-gray-400 mb-2">
+    Select Topic
+  </h3>
+
+  <div className="flex flex-wrap gap-2">
+    {topics.map((topic) => (
+      <button
+        key={topic}
+        onClick={() => {
+          setSelectedTopic(topic);
+          setIndex(0);
+          setShowAnswer(false);
+        }}
+        className={`px-3 py-2 rounded transition ${
+          selectedTopic === topic
+            ? "bg-purple-600 text-white"
+            : "bg-slate-700 hover:bg-slate-600"
+        }`}
+      >
+        {topic}
+      </button>
+    ))}
+  </div>
 </div>
 
       <div className="mt-5 flex gap-2">
