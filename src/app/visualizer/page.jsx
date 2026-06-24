@@ -150,17 +150,19 @@ const sections = [
           { name: "Binary Search", path: "/visualizer/array/binarysearch" },
         ],
       },
-      {
-        title: "Sorting",
-        items: [
-          { name: "Bubble Sort", path: "/visualizer/array/bubblesort" },
-          { name: "Selection Sort", path: "/visualizer/array/selectionsort" },
-          { name: "Insertion Sort", path: "/visualizer/array/insertionsort" },
-          { name: "Merge Sort", path: "/visualizer/array/mergesort" },
-          { name: "Quick Sort", path: "/visualizer/array/quicksort" },
-          { name: "Counting Sort", path: "/visualizer/array/countingsort" },
-        ],
-      },
+     {
+      title: "Sorting",
+      items: [
+        { name: "Bubble Sort", path: "/visualizer/array/bubblesort" },
+        { name: "Selection Sort", path: "/visualizer/array/selectionsort" },
+        { name: "Insertion Sort", path: "/visualizer/array/insertionsort" },
+        { name: "Merge Sort", path: "/visualizer/array/mergesort" },
+        { name: "Quick Sort", path: "/visualizer/array/quicksort" },
+        { name: "Heap Sort", path: "/visualizer/array/heapsort" },
+        { name: "Radix Sort", path: "/visualizer/array/radixsort" },
+        { name: "Counting Sort", path: "/visualizer/array/countingsort" },
+      ],
+    },
       {
         title: "Interview Patterns",
         items: [
