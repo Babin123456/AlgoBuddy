@@ -78,10 +78,19 @@ export default function PracticePage() {
     setMounted(true);
   }, []);
 
-  // Sync activeView with the URL ?view= param so browser Back/Forward works
+  // Sync activeView and topic with the URL ?view= and ?topic= params so browser Back/Forward works
   useEffect(() => {
     const view = searchParams.get("view") || "problem-list";
     setActiveView(view);
+    
+    if (view === "topic-wise") {
+      const topic = searchParams.get("topic");
+      if (topic) {
+        setSelectedTopicWise(topic);
+      } else {
+        setSelectedTopicWise(practiceData[0]?.title || "Arrays");
+      }
+    }
   }, [searchParams]);
 
   const ensureLoggedIn = () => {
@@ -384,7 +393,11 @@ export default function PracticePage() {
             setSelectedCompanyFilter("All"); // Reset company filter
             // Push to URL so the browser records a history entry;
             // the searchParams useEffect above will sync activeView in response.
-            router.push(`/practice?view=${view}`);
+            if (view === "topic-wise") {
+              router.push(`/practice?view=${view}&topic=${encodeURIComponent(selectedTopicWise)}`);
+            } else {
+              router.push(`/practice?view=${view}`);
+            }
           }}
           solvedCount={stats.solved}
           dailySolved={stats.dailySolved}
@@ -1178,6 +1191,12 @@ export default function PracticePage() {
                           if (selectedTopicWise !== topic.title) {
                             setIsTopicLoading(true);
                             setSelectedTopicWise(topic.title);
+                            
+                            // Push to URL to maintain history state
+                            const params = new URLSearchParams(searchParams.toString());
+                            params.set("topic", topic.title);
+                            router.push(`/practice?${params.toString()}`);
+                            
                             setTimeout(() => setIsTopicLoading(false), 300);
                           }
                         }}
