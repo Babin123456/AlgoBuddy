@@ -195,10 +195,10 @@ const ATOMIC_MATCH_UPDATE_SCRIPT = `
       updated = string.gsub(updated, '}%s*$', ',"winnerId":"' .. actorUserId .. '"}')
     end
     redis.call('SET', matchKey, updated, 'EX', 3600)
-    -- Extract opponent socketId for notification
+    -- Extract opponent socketId for notification (match userId, not socketId)
     local opponentSocketId = ''
-    for sId in string.gmatch(updated, '"socketId"%s*:%s*"([^"]+)"') do
-      if sId ~= actorUserId then
+    for uId, sId in string.gmatch(updated, '"userId"%s*:%s*"([^"]+)"[^}]+"socketId"%s*:%s*"([^"]+)"') do
+      if uId ~= actorUserId then
         opponentSocketId = sId
       end
     end
@@ -208,17 +208,13 @@ const ATOMIC_MATCH_UPDATE_SCRIPT = `
     -- Set disconnected — the remaining player claims win via match_complete
     local updated = string.gsub(matchStr, '"status"%s*:%s*"[^"]+"', '"status":"disconnected"')
     redis.call('SET', matchKey, updated, 'EX', 3600)
-    -- Extract opponent info
+    -- Extract opponent info (match userId, not socketId)
     local opponentSocketId = ''
     local opponentUserId = ''
-    for sId in string.gmatch(matchStr, '"socketId"%s*:%s*"([^"]+)"') do
-      if sId ~= actorUserId then
-        opponentSocketId = sId
-      end
-    end
-    for uId in string.gmatch(matchStr, '"userId"%s*:%s*"([^"]+)"') do
+    for uId, sId in string.gmatch(matchStr, '"userId"%s*:%s*"([^"]+)"[^}]+"socketId"%s*:%s*"([^"]+)"') do
       if uId ~= actorUserId then
         opponentUserId = uId
+        opponentSocketId = sId
       end
     end
     return '{"status":"disconnected","opponentSocketId":"' .. opponentSocketId .. '","opponentUserId":"' .. opponentUserId .. '"}'
