@@ -8,6 +8,8 @@ import com.algobuddy.backend.entity.UserProgress;
 import com.algobuddy.backend.repository.UserPracticeStatsRepository;
 import com.algobuddy.backend.repository.UserProgressRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -155,5 +157,29 @@ public class PracticeService {
 
         stats.setLastActiveDate(today);
         statsRepository.save(stats);
+    }
+
+    public void updateStreakWithRetry(@NonNull UUID userId) {
+        int maxAttempts = 3;
+        for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+            try {
+                if (self != null) {
+                    self.updateStreak(userId);
+                } else {
+                    updateStreak(userId);
+                }
+                return;
+            } catch (org.springframework.dao.TransientDataAccessException e) {
+                if (attempt == maxAttempts) {
+                    throw e;
+                }
+                try {
+                    Thread.sleep(50 * attempt);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException(ie);
+                }
+            }
+        }
     }
 }
