@@ -36,9 +36,6 @@ public class FriendshipService {
     }
 
     public List<UserProfile> getFriends(UUID userId) {
-        return friendshipRepository.findByUserId(userId).stream()
-                .map(f -> userProfileRepository.findById(f.getFriendId()).orElse(null))
-                .filter(profile -> profile != null)
-                .collect(Collectors.toList());
+        return userProfileRepository.findFriendsProfilesByUserId(userId);
     }
 }
