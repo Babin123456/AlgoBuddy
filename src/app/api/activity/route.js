@@ -22,7 +22,10 @@ export async function POST(request) {
     const supabase = getSupabaseServerClient(cookieStore);
     const { error } = await supabase
       .from("user_activity")
-      .insert({ user_id: authResult.user.id, activity_date: localDate, type: type || "site_visit" });
+      .upsert(
+        { user_id: authResult.user.id, activity_date: localDate, type: type || "site_visit" },
+        { onConflict: "user_id, activity_date", ignoreDuplicates: true }
+      );
     if (error) return jsonResponse({ error: error.message }, 500);
     return jsonResponse({ success: true });
   } catch (error) {
