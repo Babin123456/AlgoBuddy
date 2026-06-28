@@ -118,6 +118,13 @@ export default function QuizPage() {
       href: "/visualizer/recursion/trees/quiz",
       color: "bg-violet-600 hover:bg-violet-700",
     },
+    {
+      title: "Call Stack Visualization Quiz",
+      description:
+        "Test your understanding of Call Stack Visualization with multiple-choice questions.",
+      href: "/visualizer/recursion/stack/quiz",
+      color: "bg-slate-600 hover:bg-slate-700",
+    },
   ];
 
   const [searchQuery, setSearchQuery] = useState("");
