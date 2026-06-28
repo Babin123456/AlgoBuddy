@@ -27,7 +27,9 @@ import {
   ChevronRight,
   TrendingUp,
   Target,
-  ChevronLeft
+  ChevronLeft,
+  Users,
+  Calendar
 } from "lucide-react";
 import { useArenaProfile } from "@/app/hooks/useArenaProfile";
 import { useSheetProgress } from "@/app/hooks/useSheetProgress";
@@ -727,6 +729,9 @@ export default function ArenaPage() {
                       <div className="p-4 text-center text-xs font-semibold text-slate-500 dark:text-neutral-400">
                         Leaderboard is currently empty.
                       </div>
+                    )}
+                  </div>
+                )}
                 {activeTab === "history" && (
                   <div className="w-full text-left space-y-4">
                     <div className="flex justify-between items-center mb-2">
