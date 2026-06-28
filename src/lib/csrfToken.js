@@ -84,4 +84,3 @@ export async function validateCsrfTokenEdge(token) {
   }
 }
 
-export const validateCsrfToken = validateCsrfTokenEdge;
