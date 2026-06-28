@@ -20,6 +20,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -226,6 +232,46 @@ public class ArenaService {
         throw new SecurityException("Match verification failed. Opponent has not consented to this match.");
     }
 
+    private UUID verifyMatchResult(String matchId, UUID requestingUserId) {
+        String socketServerUrl = System.getenv("SOCKET_SERVER_URL");
+        if (socketServerUrl == null || socketServerUrl.isEmpty()) {
+            socketServerUrl = "http://localhost:4000";
+        }
+        try {
+            URL url = new URL(socketServerUrl + "/api/verify-match-result/" + matchId + "/" + requestingUserId);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setConnectTimeout(3000);
+            conn.setReadTimeout(3000);
+
+            int status = conn.getResponseCode();
+            if (status == 200) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder response = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+                reader.close();
+                conn.disconnect();
+
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode json = mapper.readTree(response.toString());
+
+                if (json.has("verified") && json.get("verified").asBoolean()) {
+                    if (json.has("winnerId") && !json.get("winnerId").isNull()) {
+                        return UUID.fromString(json.get("winnerId").asText());
+                    }
+                }
+            } else {
+                conn.disconnect();
+            }
+        } catch (Exception e) {
+            log.error("Failed to verify match result via socket server: {}", e.getMessage());
+        }
+        throw new SecurityException("Match result verification failed");
+    }
+
     @Scheduled(fixedRate = 300_000)
     @Transactional
     public void expireStaleMatches() {
@@ -247,6 +293,14 @@ public class ArenaService {
         }
 
         boolean isWinner = request.isWinner();
+
+        if (!matchIdStr.startsWith("mock-match-")) {
+            UUID verifiedWinnerId = verifyMatchResult(matchIdStr, requestingUserId);
+            if (!verifiedWinnerId.equals(requestingUserId)) {
+                throw new SecurityException("Match result conflict: verified winner does not match claim");
+            }
+            isWinner = true;
+        }
 
         final int MAX_RETRIES = 3;
         for (int attempt = 1; attempt <= MAX_RETRIES; attempt++) {
