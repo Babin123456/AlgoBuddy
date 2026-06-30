@@ -7,18 +7,10 @@ import { Search, X } from "lucide-react";
 export default function QuizPage() {
   const quizzes = [
     {
-      title: "Linear Search Quiz",
-      description:
-        "Test your understanding of Linear Search with multiple-choice questions.",
-      href: "/visualizer/array/linearsearch/quiz",
-      color: "bg-purple-600 hover:bg-purple-700",
-    },
-    {
-      title: "Binary Search Quiz",
-      description:
-        "Test your understanding of Binary Search with multiple-choice questions.",
-      href: "/visualizer/array/binarysearch/quiz",
-      color: "bg-blue-600 hover:bg-blue-700",
+      title: "Searching Quiz",
+      description: "Practice Linear Search and Binary Search.",
+      href: "/visualizer/array/searching/quiz",
+      color: "bg-cyan-600 hover:bg-cyan-700",
     },
     {
       title: "Bubble Sort Quiz",
