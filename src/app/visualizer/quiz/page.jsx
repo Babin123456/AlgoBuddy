@@ -11,56 +11,77 @@ export default function QuizPage() {
       description: "Practice Linear Search and Binary Search.",
       href: "/visualizer/array/searching/quiz",
       icon: Search,
-      themeColor: "bg-cyan-600",
       filename: "searching_quiz.js",
+      cardBorder: "border-cyan-500/20 dark:border-cyan-500/30",
+      topBarBg: "bg-cyan-500/10 dark:bg-cyan-500/20",
+      iconStyle: "bg-cyan-500/10 border border-cyan-500/20 dark:border-cyan-500/30 text-cyan-600 dark:text-cyan-400",
+      btnBg: "bg-cyan-600 hover:bg-cyan-700 dark:bg-cyan-500 dark:hover:bg-cyan-600",
     },
     {
       title: "Sorting Quiz",
       description: "Practice all sorting algorithms including Bubble, Selection, Insertion, Merge, Quick, Heap, Radix, and Counting Sort.",
       href: "/visualizer/array/sorting/quiz",
       icon: Terminal,
-      themeColor: "bg-indigo-600",
       filename: "sorting_quiz.js",
+      cardBorder: "border-indigo-500/20 dark:border-indigo-500/30",
+      topBarBg: "bg-indigo-500/10 dark:bg-indigo-500/20",
+      iconStyle: "bg-indigo-500/10 border border-indigo-500/20 dark:border-indigo-500/30 text-indigo-600 dark:text-indigo-400",
+      btnBg: "bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600",
     },
     {
       title: "Recursion Quiz",
       description: "Practice all recursion topics.",
       href: "/visualizer/recursion/quiz",
       icon: GitBranch,
-      themeColor: "bg-violet-600",
       filename: "recursion_quiz.js",
+      cardBorder: "border-violet-500/20 dark:border-violet-500/30",
+      topBarBg: "bg-violet-500/10 dark:bg-violet-500/20",
+      iconStyle: "bg-violet-500/10 border border-violet-500/20 dark:border-violet-500/30 text-violet-600 dark:text-violet-400",
+      btnBg: "bg-violet-600 hover:bg-violet-700 dark:bg-violet-500 dark:hover:bg-violet-600",
     },
     {
       title: "Stack Operations Quiz",
       description: "Test your understanding of Push & Pop, Peek, Is Empty, and Is Full operations.",
       href: "/visualizer/stack/quiz",
       icon: Layers,
-      themeColor: "bg-fuchsia-600",
       filename: "stack_operations_quiz.js",
+      cardBorder: "border-fuchsia-500/20 dark:border-fuchsia-500/30",
+      topBarBg: "bg-fuchsia-500/10 dark:bg-fuchsia-500/20",
+      iconStyle: "bg-fuchsia-500/10 border border-fuchsia-500/20 dark:border-fuchsia-500/30 text-fuchsia-600 dark:text-fuchsia-400",
+      btnBg: "bg-fuchsia-600 hover:bg-fuchsia-700 dark:bg-fuchsia-500 dark:hover:bg-fuchsia-600",
     },
     {
       title: "Polish Notation Evaluation Quiz",
       description: "Test your understanding of Prefix and Postfix Expression Evaluation.",
       href: "/visualizer/stack/polish/quiz",
       icon: HelpCircle,
-      themeColor: "bg-blue-600",
       filename: "polish_notation_quiz.js",
+      cardBorder: "border-blue-500/20 dark:border-blue-500/30",
+      topBarBg: "bg-blue-500/10 dark:bg-blue-500/20",
+      iconStyle: "bg-blue-500/10 border border-blue-500/20 dark:border-blue-500/30 text-blue-600 dark:text-blue-400",
+      btnBg: "bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600",
     },
     {
       title: "Implementation Quiz",
       description: "Practice Stack implementation using Array and Linked List.",
       href: "/visualizer/stack/implementation/quiz",
       icon: Layers,
-      themeColor: "bg-emerald-600",
       filename: "stack_impl_quiz.js",
+      cardBorder: "border-emerald-500/20 dark:border-emerald-500/30",
+      topBarBg: "bg-emerald-500/10 dark:bg-emerald-500/20",
+      iconStyle: "bg-emerald-500/10 border border-emerald-500/20 dark:border-emerald-500/30 text-emerald-600 dark:text-emerald-400",
+      btnBg: "bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600",
     },
     {
       title: "Monotonic Stack Quiz",
       description: "Practice Largest Rectangle in Histogram.",
       href: "/visualizer/stack/monotonic/quiz",
       icon: Layers,
-      themeColor: "bg-teal-600",
       filename: "monotonic_stack_quiz.js",
+      cardBorder: "border-teal-500/20 dark:border-teal-500/30",
+      topBarBg: "bg-teal-500/10 dark:bg-teal-500/20",
+      iconStyle: "bg-teal-500/10 border border-teal-500/20 dark:border-teal-500/30 text-teal-600 dark:text-teal-400",
+      btnBg: "bg-teal-600 hover:bg-teal-700 dark:bg-teal-500 dark:hover:bg-teal-600",
     }
   ];
 
@@ -87,22 +108,20 @@ export default function QuizPage() {
                 transition={{ duration: 0.4, delay: index * 0.05, ease: [0.22, 1, 0.36, 1] }}
                 whileHover={{ y: -6, scale: 1.015 }}
                 whileTap={{ scale: 0.985 }}
-                className="group flex flex-col h-full rounded-2xl border border-[#e5e7eb] dark:border-[#333] bg-white dark:bg-[#1a1a1a] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300"
+                className={`group flex flex-col h-full rounded-2xl border ${quiz.cardBorder} bg-white dark:bg-[#1a1a1a] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300`}
               >
-                {/* macOS Terminal style top bar */}
-                <div className="flex items-center gap-2 px-4 py-3 bg-surface-50 dark:bg-[#202020] border-b border-[#e5e7eb] dark:border-[#333]">
-                  <span className="w-3 h-3 rounded-full bg-[#ff5f57]" />
-                  <span className="w-3 h-3 rounded-full bg-[#febc2e]" />
-                  <span className="w-3 h-3 rounded-full bg-[#28c840]" />
-                  <span className="ml-2 text-[12px] font-mono text-surface-500 dark:text-surface-400">
-                    {quiz.filename}
-                  </span>
+                {/* Terminal command execution style top bar */}
+                <div className={`flex items-center justify-between px-4 py-2.5 ${quiz.topBarBg} border-b ${quiz.cardBorder}`}>
+                  <div className="flex items-center gap-1.5 font-mono text-[11px] text-surface-600 dark:text-surface-300">
+                    <span className="text-violet-500 font-bold">$</span>
+                    <span>node {quiz.filename}</span>
+                  </div>
                 </div>
 
                 {/* Main content */}
                 <div className="p-6 flex-1 flex flex-col justify-between">
                   <div className="flex items-start gap-4 mb-6">
-                    <div className={`w-12 h-12 rounded-xl ${quiz.themeColor} text-white flex items-center justify-center p-2.5 flex-shrink-0 shadow-md`}>
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center p-2.5 flex-shrink-0 ${quiz.iconStyle}`}>
                       <IconComponent size={24} />
                     </div>
                     <div>
@@ -120,7 +139,7 @@ export default function QuizPage() {
                   </p>
 
                   <Link href={quiz.href} className="block mt-auto w-full">
-                    <button className="w-full h-11 rounded-xl bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white font-bold text-[14px] flex items-center justify-center gap-2 shadow-sm hover:shadow-md transition-all">
+                    <button className={`w-full h-11 rounded-xl ${quiz.btnBg} text-white font-bold text-[14px] flex items-center justify-center gap-2 shadow-sm hover:shadow-md transition-all`}>
                       <span>Start Quiz</span>
                       <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                     </button>
