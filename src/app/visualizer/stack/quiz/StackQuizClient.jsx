@@ -1,60 +1,100 @@
 "use client";
 
 import Link from "next/link";
+import { ArrowLeft, Play } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function StackQuizClient() {
   const quizzes = [
     {
       title: "Push & Pop Quiz",
       href: "/visualizer/stack/quiz/push-pop",
-      color: "bg-purple-600 hover:bg-purple-700",
+      filename: "push_pop_quiz.js",
+      description: "Test your understanding of push and pop operations, indexing modifications, and order constraints (LIFO).",
     },
     {
       title: "Peek Quiz",
       href: "/visualizer/stack/quiz/peek",
-      color: "bg-blue-600 hover:bg-blue-700",
+      filename: "peek_quiz.js",
+      description: "Test your understanding of inspecting the top element without removing it, index bounds, and error handling.",
     },
     {
       title: "Is Empty Quiz",
       href: "/visualizer/stack/quiz/isempty",
-      color: "bg-green-600 hover:bg-green-700",
+      filename: "is_empty_quiz.js",
+      description: "Test your knowledge of stack emptiness validations, underflow conditions, and pointer checks.",
     },
     {
       title: "Is Full Quiz",
       href: "/visualizer/stack/quiz/isfull",
-      color: "bg-orange-600 hover:bg-orange-700",
+      filename: "is_full_quiz.js",
+      description: "Test your understanding of overflow checks, maximum capacity bounds, and fixed-size limitations.",
     },
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#1c1d1f] p-8">
-      <h1 className="text-5xl font-bold text-center mb-4">
-        📚 Stack Operations Quiz
-      </h1>
+    <div className="min-h-screen bg-white dark:bg-[#1c1d1f] text-[var(--udemy-text)] dark:text-white transition-colors duration-300 pb-20">
+      
+      {/* Header / Hero */}
+      <section className="relative pt-6 pb-4">
+        <div className="max-w-[1100px] mx-auto px-4">
+          <Link href="/visualizer/quiz">
+            <button className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-primary)] dark:text-[var(--color-primary-light)] hover:opacity-85 transition-opacity mb-3">
+              <ArrowLeft size={16} />
+              <span>Back to all quizzes</span>
+            </button>
+          </Link>
+          <h1 className="text-2xl md:text-3xl font-black mb-2">
+            Stack Operations Quiz Portal
+          </h1>
+          <p className="text-[14px] text-surface-600 dark:text-surface-400 font-medium">
+            Test your understanding of Push, Pop, Peek, Is Empty, and Is Full stack operations.
+          </p>
+        </div>
+      </section>
 
-      <p className="text-center text-gray-500 mb-10">
-        Choose a Stack Operations quiz to test your understanding.
-      </p>
+      {/* Grid of Sub-quizzes */}
+      <div className="max-w-4xl mx-auto px-4 mt-8">
+        <div className="grid md:grid-cols-2 gap-6 items-stretch">
+          {quizzes.map((quiz, index) => (
+            <motion.div
+              key={quiz.title}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
+              whileHover={{ y: -6, scale: 1.015 }}
+              whileTap={{ scale: 0.985 }}
+              className="group flex flex-col h-full rounded-2xl border border-fuchsia-500/20 dark:border-fuchsia-500/30 bg-white dark:bg-[#1a1a1a] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300"
+            >
+              {/* Terminal command execution style top bar */}
+              <div className="flex items-center justify-between px-4 py-2.5 bg-fuchsia-500/10 dark:bg-fuchsia-500/20 border-b border-fuchsia-500/20 dark:border-fuchsia-500/30">
+                <div className="flex items-center gap-1.5 font-mono text-[11px] text-surface-600 dark:text-surface-300">
+                  <span className="text-violet-500 font-bold">$</span>
+                  <span>node {quiz.filename}</span>
+                </div>
+              </div>
 
-      <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-        {quizzes.map((quiz) => (
-          <div
-            key={quiz.title}
-            className="border rounded-2xl p-6 shadow-sm hover:shadow-lg transition"
-          >
-            <h2 className="text-2xl font-semibold mb-4">
-              📘 {quiz.title}
-            </h2>
+              {/* Main Card Content */}
+              <div className="p-6 flex-1 flex flex-col justify-between">
+                <div>
+                  <h2 className="text-[20px] font-extrabold text-surface-900 dark:text-white group-hover:text-fuchsia-600 dark:group-hover:text-fuchsia-400 transition-colors mb-2">
+                    {quiz.title}
+                  </h2>
+                  <p className="text-[14px] text-surface-600 dark:text-surface-300 leading-relaxed mb-6">
+                    {quiz.description}
+                  </p>
+                </div>
 
-            <Link href={quiz.href}>
-              <button
-                className={`text-white px-6 py-3 rounded-lg font-semibold ${quiz.color}`}
-              >
-                Start Quiz
-              </button>
-            </Link>
-          </div>
-        ))}
+                <Link href={quiz.href} className="block mt-auto w-full">
+                  <button className="w-full h-11 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-700 dark:bg-fuchsia-500 dark:hover:bg-fuchsia-600 text-white font-bold text-[14px] flex items-center justify-center gap-2 shadow-sm hover:shadow-md transition-all">
+                    <span>Start Quiz</span>
+                    <Play size={14} className="fill-current" />
+                  </button>
+                </Link>
+              </div>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </div>
   );
