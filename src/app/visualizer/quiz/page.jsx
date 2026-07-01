@@ -122,7 +122,24 @@ export default function QuizPage() {
 
       btnBg:
         "bg-orange-600 hover:bg-orange-700 dark:bg-orange-500 dark:hover:bg-orange-600",
-    }
+    },
+    {
+      title: "Queue Implementation Quiz",
+      description:
+        "Practice Queue implementations using Arrays and Linked Lists.",
+      href: "/visualizer/queue/implementation/quiz",
+      icon: Layers,
+      filename: "queue_implementation_quiz.js",
+
+      cardBorder: "border-emerald-500/20 dark:border-emerald-500/30",
+      topBarBg: "bg-emerald-500/10 dark:bg-emerald-500/20",
+
+      iconStyle:
+        "bg-emerald-500/10 border border-emerald-500/20 dark:border-emerald-500/30 text-emerald-600 dark:text-emerald-400",
+
+      btnBg:
+        "bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600",
+    },
   ];
 
   return (
