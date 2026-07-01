@@ -1330,8 +1330,13 @@ export default function PracticePage() {
                                     <div className="flex justify-center"><CompanyLogos companies={prob.companies} /></div>
                                   </td>
                                   <td className="py-4 px-5 text-center">
-                                    <div className="flex justify-center">
-                                      <button onClick={() => handleStatusToggle(prob.id, status)} className="focus:outline-none">
+                                    <div className="relative flex justify-center group">
+                                      <button
+                                        onClick={() => handleStatusToggle(prob.id, status)}
+                                        className="focus:outline-none"
+                                        title={"Click once → Mark as Attempted 🟠\nDouble click → Mark as Completed 🟢"}
+                                        aria-label={"Status action: click once to mark as attempted, double click to mark as completed"}
+                                      >
                                         {status === "Completed" ? (
                                           <div className="w-5 h-5 rounded-full border border-emerald-500 bg-emerald-500 flex items-center justify-center text-white scale-105 transition"><CheckCircle2 size={12} className="stroke-[3]" /></div>
                                         ) : status === "In Progress" ? (
@@ -1340,6 +1345,10 @@ export default function PracticePage() {
                                           <div className="w-5 h-5 rounded-full border-2 border-slate-200 dark:border-neutral-700 hover:border-primary transition" />
                                         )}
                                       </button>
+                                      <div className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 w-max -translate-x-1/2 rounded-2xl border border-slate-700/80 bg-slate-950/95 px-3 py-2 text-[10px] font-bold text-slate-200 shadow-xl shadow-black/20 ring-1 ring-white/5 opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+                                        <div>Click once → Mark as Attempted 🟠</div>
+                                        <div>Double click → Mark as Completed 🟢</div>
+                                      </div>
                                     </div>
                                   </td>
                                   <td className="py-4 px-5 text-center">
