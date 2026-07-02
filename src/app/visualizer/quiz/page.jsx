@@ -186,6 +186,19 @@ export default function QuizPage() {
         "bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600",
     },
     {
+      title: "Binary Tree Quiz",
+      description: "Practice Binary Tree Structure & Properties and Types.",
+      href: "/visualizer/tree/binaryTree/quiz",
+      filename: "binary_tree_quiz.js",
+      icon: Layers,
+      cardBorder: "border-green-500/20 dark:border-green-500/30",
+      topBarBg: "bg-green-500/10 dark:bg-green-500/20",
+      iconStyle:
+        "bg-green-500/10 border border-green-500/20 dark:border-green-500/30 text-green-600 dark:text-green-400",
+      btnBg:
+        "bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600",
+    },
+    {
       title: "Dynamic Programming Quiz",
       description:
         "Test your understanding of DP concepts including Memoization, Tabulation, Knapsack, and LCS.",
@@ -198,34 +211,6 @@ export default function QuizPage() {
         "bg-rose-500/10 border border-rose-500/20 dark:border-rose-500/30 text-rose-600 dark:text-rose-400",
       btnBg:
         "bg-rose-600 hover:bg-rose-700 dark:bg-rose-500 dark:hover:bg-rose-600",
-    },
-    {
-      title: "Tree Data Structure Quiz",
-      description:
-        "Test your understanding of Tree Data Structures including Binary Trees, BSTs, Traversals, and more.",
-      href: "/visualizer/tree/quiz",
-      icon: Network,
-      filename: "tree_data_structure_quiz.js",
-      cardBorder: "border-lime-500/20 dark:border-lime-500/30",
-      topBarBg: "bg-lime-500/10 dark:bg-lime-500/20",
-      iconStyle:
-        "bg-lime-500/10 border border-lime-500/20 dark:border-lime-500/30 text-lime-600 dark:text-lime-400",
-      btnBg:
-        "bg-lime-600 hover:bg-lime-700 dark:bg-lime-500 dark:hover:bg-lime-600",
-    },
-    {
-      title: "Segment Tree Quiz",
-      description:
-        "Test your understanding of Segment Trees, Range Queries, Point Updates, and Lazy Propagation.",
-      href: "/visualizer/segment-tree/quiz",
-      icon: Network,
-      filename: "segment_tree_quiz.js",
-      cardBorder: "border-amber-500/20 dark:border-amber-500/30",
-      topBarBg: "bg-amber-500/10 dark:bg-amber-500/20",
-      iconStyle:
-        "bg-amber-500/10 border border-amber-500/20 dark:border-amber-500/30 text-amber-600 dark:text-amber-400",
-      btnBg:
-        "bg-amber-600 hover:bg-amber-700 dark:bg-amber-500 dark:hover:bg-amber-600",
     },
   ];
   return (
