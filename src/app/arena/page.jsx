@@ -33,7 +33,8 @@ import {
   Calendar,
   TrendingDown,
   Minus,
-  Navigation
+  Navigation,
+  Share2
 } from "lucide-react";
 import { useArenaProfile } from "@/app/hooks/useArenaProfile";
 import { useSheetProgress } from "@/app/hooks/useSheetProgress";
@@ -1007,6 +1008,29 @@ export default function ArenaPage() {
                             />
                           );
                         })}
+                      </div>
+                    </div>
+
+                    <div className="bg-gradient-to-r from-primary to-primary/80 border border-primary/20 rounded-2xl p-6 text-white relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl shadow-primary/20">
+                      <div className="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+                        <Flame size={200} />
+                      </div>
+                      <div className="relative z-10 text-center md:text-left flex-1">
+                        <h5 className="text-xl font-black mb-1">Brag About Your Streak!</h5>
+                        <p className="text-sm text-white/80 max-w-md">
+                          You're on a {streakData?.current || 0} day coding streak! Show off your dedication to your friends and rivals.
+                        </p>
+                      </div>
+                      <div className="relative z-10 shrink-0">
+                        <button 
+                          onClick={() => {
+                            toast.success("Link copied to clipboard!");
+                          }}
+                          className="px-6 py-3 bg-white text-primary rounded-xl text-sm font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-2 group"
+                        >
+                          <Share2 size={18} className="group-hover:scale-110 transition-transform" />
+                          Share My Streak
+                        </button>
                       </div>
                     </div>
                   </div>
