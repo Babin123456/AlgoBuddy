@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { Layers, GitBranch, Terminal, HelpCircle, ArrowRight, Search, Network, Brain } from "lucide-react";
+import { Layers, GitBranch, Terminal, HelpCircle, ArrowRight, Search, Network, Brain, TreePine } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function QuizPage() {
+  
   const quizzes = [
     {
       title: "Searching Quiz",
@@ -238,6 +239,20 @@ export default function QuizPage() {
         "bg-emerald-500/10 border border-emerald-500/20 dark:border-emerald-500/30 text-emerald-600 dark:text-emerald-400",
       btnBg:
         "bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600",
+    },
+    {
+      title: "Tree Algorithms Quiz",
+      description:
+        "Practice LCA, Diameter, Height, Tree Views, Boundary Traversal, Vertical Order, Zigzag, Morris Traversal, and Serialization.",
+      href: "/visualizer/tree/algorithms/quiz",
+      filename: "tree_algorithms_quiz.js",
+      icon: GitBranch,
+      cardBorder: "border-green-500/20 dark:border-green-500/30",
+      topBarBg: "bg-green-500/10 dark:bg-green-500/20",
+      iconStyle:
+        "bg-green-500/10 border border-green-500/20 dark:border-green-500/30 text-green-600 dark:text-green-400",
+      btnBg:
+        "bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600",
     },
     {
       title: "Tree Applications Quiz",

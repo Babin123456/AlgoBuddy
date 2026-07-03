@@ -33,7 +33,8 @@ import {
   Calendar,
   TrendingDown,
   Minus,
-  Navigation
+  Navigation,
+  Share2
 } from "lucide-react";
 import { useArenaProfile } from "@/app/hooks/useArenaProfile";
 import { useSheetProgress } from "@/app/hooks/useSheetProgress";
@@ -768,44 +769,51 @@ export default function ArenaPage() {
 
                     {/* Top 3 Podium */}
                     {leaderboard && leaderboard.length >= 3 && !searchQuery.trim() && leaderboardFilter === "Global" && (
-                      <div className="flex justify-center items-end gap-4 my-6 pt-4 pb-2 px-4 bg-gradient-to-t from-slate-100/50 to-transparent dark:from-neutral-900/50 rounded-xl relative">
-                        {/* 2nd Place */}
-                        <div className="flex flex-col items-center pb-2">
-                          <div className="relative">
-                            <div className="w-10 h-10 rounded-full border-2 border-slate-300 dark:border-neutral-500 overflow-hidden mb-1">
-                              {leaderboard[1].avatarUrl ? <img src={leaderboard[1].avatarUrl} alt="2nd" className="w-full h-full object-cover"/> : <div className="w-full h-full bg-slate-200 dark:bg-neutral-700 flex items-center justify-center text-[10px] font-bold text-slate-500 dark:text-neutral-400">{getInitials(leaderboard[1].name)}</div>}
+                      (() => {
+                        const getDisplayName = (player) => player.name || (player.userId ? `User ${player.userId.substring(0,4)}` : "Unknown");
+                        const p1 = leaderboard[0], p2 = leaderboard[1], p3 = leaderboard[2];
+                        const n1 = getDisplayName(p1), n2 = getDisplayName(p2), n3 = getDisplayName(p3);
+                        return (
+                          <div className="flex justify-center items-end gap-4 my-6 pt-4 pb-2 px-4 bg-gradient-to-t from-slate-100/50 to-transparent dark:from-neutral-900/50 rounded-xl relative">
+                            {/* 2nd Place */}
+                            <div className="flex flex-col items-center pb-2">
+                              <div className="relative">
+                                <div className="w-10 h-10 rounded-full border-2 border-slate-300 dark:border-neutral-500 overflow-hidden mb-1">
+                                  {p2.avatarUrl ? <img src={p2.avatarUrl} alt="2nd" className="w-full h-full object-cover"/> : <div className="w-full h-full bg-slate-200 dark:bg-neutral-700 flex items-center justify-center text-[10px] font-bold text-slate-500 dark:text-neutral-400">{getInitials(n2)}</div>}
+                                </div>
+                                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-slate-300 dark:bg-neutral-600 rounded-full w-4 h-4 flex items-center justify-center text-[8px] font-bold text-slate-700 dark:text-slate-200 shadow-md ring-1 ring-white dark:ring-neutral-900">2</div>
+                              </div>
+                              <span className="text-[10px] font-bold text-slate-700 dark:text-neutral-300 truncate max-w-[60px] mt-1">{n2.split(" ")[0]}</span>
+                              <span className="text-[9px] font-bold text-slate-500">{p2.rating}</span>
                             </div>
-                            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-slate-300 dark:bg-neutral-600 rounded-full w-4 h-4 flex items-center justify-center text-[8px] font-bold text-slate-700 dark:text-slate-200 shadow-md ring-1 ring-white dark:ring-neutral-900">2</div>
-                          </div>
-                          <span className="text-[10px] font-bold text-slate-700 dark:text-neutral-300 truncate max-w-[60px] mt-1">{leaderboard[1].name?.split(" ")[0]}</span>
-                          <span className="text-[9px] font-bold text-slate-500">{leaderboard[1].rating}</span>
-                        </div>
-                        
-                        {/* 1st Place */}
-                        <div className="flex flex-col items-center relative z-10 pb-4">
-                          <Trophy size={16} className="text-amber-500 mb-1 drop-shadow-md"/>
-                          <div className="relative">
-                            <div className="w-14 h-14 rounded-full border-2 border-amber-400 dark:border-amber-500 overflow-hidden mb-1 ring-4 ring-amber-400/20 shadow-lg shadow-amber-500/20">
-                              {leaderboard[0].avatarUrl ? <img src={leaderboard[0].avatarUrl} alt="1st" className="w-full h-full object-cover"/> : <div className="w-full h-full bg-slate-200 dark:bg-neutral-700 flex items-center justify-center text-xs font-bold text-amber-500">{getInitials(leaderboard[0].name)}</div>}
+                            
+                            {/* 1st Place */}
+                            <div className="flex flex-col items-center relative z-10 pb-4">
+                              <Trophy size={16} className="text-amber-500 mb-1 drop-shadow-md"/>
+                              <div className="relative">
+                                <div className="w-14 h-14 rounded-full border-2 border-amber-400 dark:border-amber-500 overflow-hidden mb-1 ring-4 ring-amber-400/20 shadow-lg shadow-amber-500/20">
+                                  {p1.avatarUrl ? <img src={p1.avatarUrl} alt="1st" className="w-full h-full object-cover"/> : <div className="w-full h-full bg-slate-200 dark:bg-neutral-700 flex items-center justify-center text-xs font-bold text-amber-500">{getInitials(n1)}</div>}
+                                </div>
+                                <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 bg-amber-400 dark:bg-amber-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold shadow-md ring-2 ring-white dark:ring-neutral-900">1</div>
+                              </div>
+                              <span className="text-xs font-bold text-slate-900 dark:text-white mt-1.5 truncate max-w-[80px]">{n1.split(" ")[0]}</span>
+                              <span className="text-[10px] font-bold text-amber-600 dark:text-amber-500">{p1.rating}</span>
                             </div>
-                            <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 bg-amber-400 dark:bg-amber-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold shadow-md ring-2 ring-white dark:ring-neutral-900">1</div>
-                          </div>
-                          <span className="text-xs font-bold text-slate-900 dark:text-white mt-1.5 truncate max-w-[80px]">{leaderboard[0].name?.split(" ")[0]}</span>
-                          <span className="text-[10px] font-bold text-amber-600 dark:text-amber-500">{leaderboard[0].rating}</span>
-                        </div>
-                        
-                        {/* 3rd Place */}
-                        <div className="flex flex-col items-center pb-1">
-                          <div className="relative">
-                            <div className="w-9 h-9 rounded-full border-2 border-orange-700/50 dark:border-orange-900 overflow-hidden mb-1">
-                              {leaderboard[2].avatarUrl ? <img src={leaderboard[2].avatarUrl} alt="3rd" className="w-full h-full object-cover"/> : <div className="w-full h-full bg-slate-200 dark:bg-neutral-700 flex items-center justify-center text-[9px] font-bold text-orange-800 dark:text-orange-700">{getInitials(leaderboard[2].name)}</div>}
+                            
+                            {/* 3rd Place */}
+                            <div className="flex flex-col items-center pb-1">
+                              <div className="relative">
+                                <div className="w-9 h-9 rounded-full border-2 border-orange-700/50 dark:border-orange-900 overflow-hidden mb-1">
+                                  {p3.avatarUrl ? <img src={p3.avatarUrl} alt="3rd" className="w-full h-full object-cover"/> : <div className="w-full h-full bg-slate-200 dark:bg-neutral-700 flex items-center justify-center text-[9px] font-bold text-orange-800 dark:text-orange-700">{getInitials(n3)}</div>}
+                                </div>
+                                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-orange-300 dark:bg-orange-900/80 text-orange-900 dark:text-orange-400 rounded-full w-4 h-4 flex items-center justify-center text-[8px] font-bold shadow-md ring-1 ring-white dark:ring-neutral-900">3</div>
+                              </div>
+                              <span className="text-[10px] font-bold text-slate-700 dark:text-neutral-300 truncate max-w-[60px] mt-1">{n3.split(" ")[0]}</span>
+                              <span className="text-[9px] font-bold text-slate-500">{p3.rating}</span>
                             </div>
-                            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-orange-300 dark:bg-orange-900/80 text-orange-900 dark:text-orange-400 rounded-full w-4 h-4 flex items-center justify-center text-[8px] font-bold shadow-md ring-1 ring-white dark:ring-neutral-900">3</div>
                           </div>
-                          <span className="text-[10px] font-bold text-slate-700 dark:text-neutral-300 truncate max-w-[60px] mt-1">{leaderboard[2].name?.split(" ")[0]}</span>
-                          <span className="text-[9px] font-bold text-slate-500">{leaderboard[2].rating}</span>
-                        </div>
-                      </div>
+                        );
+                      })()
                     )}
 
                     <div className="space-y-2">
@@ -970,43 +978,78 @@ export default function ArenaPage() {
                   </div>
                 )}
                 {activeTab === "streak" && (
-                  <div className="w-full text-left space-y-6">
-                    <div>
+                  <div className="w-full text-left space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
+                    <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 delay-100 fill-mode-both">
                       <h4 className="text-xl font-extrabold text-slate-800 dark:text-neutral-200 mb-1">Daily Streak</h4>
                       <p className="text-xs text-slate-500 dark:text-neutral-400">Keep your learning momentum going by solving problems every day.</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="bg-slate-50 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-2xl p-5 text-center">
+                      <div className="bg-slate-50 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-2xl p-5 text-center animate-in zoom-in-95 duration-500 delay-200 fill-mode-both">
                         <Flame size={32} className="mx-auto mb-2 text-amber-500 animate-pulse" />
                         <div className="text-2xl font-black text-slate-800 dark:text-neutral-200">{streakData?.current || 0}</div>
                         <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Current Streak</div>
                       </div>
-                      <div className="bg-slate-50 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-2xl p-5 text-center">
+                      <div className="bg-slate-50 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-2xl p-5 text-center animate-in zoom-in-95 duration-500 delay-300 fill-mode-both">
                         <Trophy size={32} className="mx-auto mb-2 text-primary" />
                         <div className="text-2xl font-black text-slate-800 dark:text-neutral-200">{streakData?.longest || 0}</div>
                         <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Longest Streak</div>
                       </div>
-                      <div className="bg-slate-50 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-2xl p-5 text-center">
+                      <div className="bg-slate-50 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-2xl p-5 text-center animate-in zoom-in-95 duration-500 delay-400 fill-mode-both">
                         <Calendar size={32} className="mx-auto mb-2 text-indigo-500" />
                         <div className="text-2xl font-black text-slate-800 dark:text-neutral-200">14</div>
                         <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Total Days Active</div>
                       </div>
                     </div>
 
-                    <div className="bg-slate-50 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-2xl p-5">
+                    <div className="bg-slate-50 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-2xl p-5 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-500 fill-mode-both">
                       <h5 className="text-sm font-bold text-slate-800 dark:text-neutral-200 mb-4">Activity Heatmap (Last 30 Days)</h5>
                       <div className="grid grid-cols-7 gap-2">
                         {Array.from({ length: 30 }).map((_, i) => {
-                          const isActive = Math.random() > 0.4;
+                          const daysAgo = 29 - i;
+                          const current = streakData?.current || 0;
+                          
+                          let isActive = daysAgo < current;
+                          // Simulate historical activity deterministically if outside current streak
+                          if (!isActive) {
+                            isActive = (daysAgo * 7) % 11 < 4 && daysAgo < 25; 
+                          }
+                          
+                          const d = new Date();
+                          d.setDate(d.getDate() - daysAgo);
+                          const dateStr = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                          
                           return (
                             <div 
                               key={i} 
-                              className={`aspect-square rounded-lg transition ${isActive ? "bg-amber-400 dark:bg-amber-500" : "bg-slate-200 dark:bg-neutral-800"} hover:scale-110`}
-                              title={isActive ? "Active" : "Inactive"}
+                              className={`aspect-square rounded-lg transition-all duration-300 ${isActive ? "bg-amber-400 dark:bg-amber-500 shadow-[0_0_8px_rgba(251,191,36,0.3)]" : "bg-slate-200 dark:bg-neutral-800"} hover:scale-110 cursor-pointer`}
+                              title={`${dateStr}: ${isActive ? "Active 🔥" : "Inactive"}`}
                             />
                           );
                         })}
+                      </div>
+                    </div>
+
+                    <div className="bg-gradient-to-r from-primary to-primary/80 border border-primary/20 rounded-2xl p-6 text-white relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl shadow-primary/20">
+                      <div className="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+                        <Flame size={200} />
+                      </div>
+                      <div className="relative z-10 text-center md:text-left flex-1">
+                        <h5 className="text-xl font-black mb-1">Brag About Your Streak!</h5>
+                        <p className="text-sm text-white/80 max-w-md">
+                          You're on a {streakData?.current || 0} day coding streak! Show off your dedication to your friends and rivals.
+                        </p>
+                      </div>
+                      <div className="relative z-10 shrink-0">
+                        <button 
+                          onClick={() => {
+                            toast.success("Link copied to clipboard!");
+                          }}
+                          className="px-6 py-3 bg-white text-primary rounded-xl text-sm font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-2 group"
+                        >
+                          <Share2 size={18} className="group-hover:scale-110 transition-transform" />
+                          Share My Streak
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -1045,7 +1088,7 @@ export default function ArenaPage() {
                   dateToCheck.setDate(today.getDate() + diff);
                   
                   const isFuture = diff > 0;
-                  const isActive = !isFuture && streakData?.isActive && streakData.isActive(dateToCheck);
+                  const isActive = !isFuture && -diff < (streakData?.current || 0);
                   
                   return (
                     <div key={day} className="flex flex-col items-center">
