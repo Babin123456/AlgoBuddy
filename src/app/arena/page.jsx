@@ -101,6 +101,19 @@ export default function ArenaPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedRow, setExpandedRow] = useState(null);
 
+  const calculateRank = (xp) => {
+    if (xp >= 10000) return { name: "Grandmaster", Icon: Crown, color: "text-purple-500", ringColor: "border-purple-500" };
+    if (xp >= 5000) return { name: "Diamond", Icon: Award, color: "text-indigo-500", ringColor: "border-indigo-500" };
+    if (xp >= 2500) return { name: "Platinum", Icon: Star, color: "text-cyan-500", ringColor: "border-cyan-500" };
+    if (xp >= 1000) return { name: "Gold", Icon: ShieldCheck, color: "text-yellow-500", ringColor: "border-yellow-500" };
+    if (xp >= 500) return { name: "Silver", Icon: ShieldAlert, color: "text-slate-400", ringColor: "border-slate-400" };
+    return { name: "Bronze", Icon: Shield, color: "text-amber-700", ringColor: "border-amber-700" };
+  };
+
+  const rankedMatches = matchHistory?.filter(m => m.mode === 'ranked' || m.isRanked) || [];
+  const currentRank = rankedMatches.length >= 5 ? calculateRank(profile?.xp || 0) : { name: "Unranked", Icon: Trophy, color: "text-slate-400", ringColor: "border-primary" };
+  const RankIcon = currentRank.Icon;
+
   const handleTabChange = (tabId) => {
     if (["ranked", "friend", "streak", "badges", "history"].includes(tabId)) {
       if (!ensureLoggedIn()) return;
@@ -638,13 +651,15 @@ export default function ArenaPage() {
                     <div className="bg-slate-50 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-2xl p-6 flex flex-col items-center justify-center text-center">
                       <div className="relative mb-6">
                         <div className="w-32 h-32 rounded-full border-4 border-slate-200 dark:border-neutral-800 flex items-center justify-center shadow-inner bg-white dark:bg-neutral-800 relative z-10">
-                          <Trophy size={64} className="text-slate-400" />
+                          <RankIcon size={64} className={currentRank.color} />
                         </div>
-                        <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent border-l-transparent transform rotate-45 z-20"></div>
+                        <div className={`absolute inset-0 rounded-full border-4 ${currentRank.ringColor} border-t-transparent border-l-transparent transform rotate-45 z-20`}></div>
                       </div>
                       
-                      <h3 className="text-2xl font-black text-slate-800 dark:text-neutral-200 uppercase tracking-widest mb-1">Unranked</h3>
-                      <p className="text-xs text-slate-500 font-bold mb-6">Play 5 placement matches to reveal your rank</p>
+                      <h3 className={`text-2xl font-black uppercase tracking-widest mb-1 ${currentRank.color === 'text-slate-400' ? 'text-slate-800 dark:text-neutral-200' : currentRank.color}`}>{currentRank.name}</h3>
+                      <p className="text-xs text-slate-500 font-bold mb-6">
+                        {rankedMatches.length >= 5 ? `${profile?.xp || 0} Rating` : "Play 5 placement matches to reveal your rank"}
+                      </p>
 
                       <div className="w-full max-w-sm mb-6">
                         <div className="flex justify-between text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-2">
