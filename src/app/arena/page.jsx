@@ -207,6 +207,7 @@ export default function ArenaPage() {
   const [duelTopic, setDuelTopic] = useState("Random");
   const [joinCode, setJoinCode] = useState("");
   const [duelWager, setDuelWager] = useState(50);
+  const [duelMode, setDuelMode] = useState("Standard");
 
   const handleJoinLobby = () => {
     if (joinCode.length !== 6) {
@@ -731,8 +732,15 @@ export default function ArenaPage() {
                           <div className="space-y-2">
                             <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Mode</label>
                             <div className="flex gap-2">
-                              <button className="flex-1 py-1.5 text-xs font-bold rounded-lg border bg-primary/10 border-primary/30 text-primary">Standard</button>
-                              <button className="flex-1 py-1.5 text-xs font-bold rounded-lg border bg-white dark:bg-neutral-800 border-slate-200 dark:border-neutral-700 text-slate-600 dark:text-neutral-400 hover:border-slate-300">Optimization</button>
+                              {["Standard", "Optimization"].map(mode => (
+                                <button 
+                                  key={mode} 
+                                  onClick={() => setDuelMode(mode)}
+                                  className={`flex-1 py-1.5 text-xs font-bold rounded-lg border ${duelMode === mode ? "bg-primary/10 border-primary/30 text-primary" : "bg-white dark:bg-neutral-800 border-slate-200 dark:border-neutral-700 text-slate-600 dark:text-neutral-400 hover:border-slate-300"}`}
+                                >
+                                  {mode}
+                                </button>
+                              ))}
                             </div>
                           </div>
 
