@@ -264,6 +264,17 @@ export const algorithmRegistry = {
 },
     component: dynamic(() => import('@/app/visualizer/array/shellsort/AlgorithmClient')),
   },
+  "array/timsort": {
+    metadata: {
+  title: "Tim Sort Algorithm | Step-by-Step Visualization",
+  description: "Learn Tim Sort with interactive animations showing run detection, insertion sorting, and merging.",
+  robots: "index, follow",
+  openGraph: {
+    images: [{ url: "/og/visualizer.png", width: 1200, height: 630, alt: "Tim Sort Algorithm Visualization" }],
+  },
+},
+    component: dynamic(() => import('@/app/visualizer/array/timsort/AlgorithmClient')),
+  },
   "array/selectionsort": {
     metadata: {
   title: "Selection Sort Algorithm | Step-by-Step Visualization",

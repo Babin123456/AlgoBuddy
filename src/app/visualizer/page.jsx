@@ -160,6 +160,7 @@ const sections = [
           { name: "Radix Sort", path: "/visualizer/array/radixsort" },
           { name: "Counting Sort", path: "/visualizer/array/countingsort" },
           { name: "Shell Sort", path: "/visualizer/array/shellsort" },
+          { name: "Tim Sort", path: "/visualizer/array/timsort" },
         ],
       },
       {
