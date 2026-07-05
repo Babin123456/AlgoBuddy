@@ -427,42 +427,51 @@ export default function PracticePage() {
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-neutral-900 text-slate-800 dark:text-neutral-200 transition-colors duration-300">
       
-      {/* Container holding three-column layout */}
       <div className="max-w-[1440px] mx-auto px-4 md:px-8 py-8 flex flex-col lg:flex-row gap-y-8 lg:gap-0">
-        
-        {/* Left Sidebar */}
-        <PracticeSidebar 
-          activeView={activeView}
-          onViewChange={(view) => {
-            if (["my-sheet", "bookmarks", "recent-solved"].includes(view)) {
-              if (!ensureLoggedIn()) return;
-            }
-            setCurrentPage(1); // Reset page on view change
-            setSelectedCompanyFilter("All"); // Reset company filter
-            // Push to URL so the browser records a history entry;
-            // the searchParams useEffect above will sync activeView in response.
-            if (view === "topic-wise") {
-              router.push(`/practice?view=${view}&topic=${encodeURIComponent(selectedTopicWise)}`);
-            } else {
-              router.push(`/practice?view=${view}`);
-            }
-          }}
-          solvedCount={stats.solved}
-          dailySolved={stats.dailySolved}
-          weeklySolved={stats.weeklySolved}
-          monthlySolved={stats.monthlySolved}
-          dailyGoal={3}
-          weeklyGoal={10}
-          monthlyGoal={50}
-          streakDays={currentStreak}
-          bestStreak={longestStreak}
-          mySheetCount={sheetCount}
-          onBackToPractice={() => router.push("/")}
-          onBackToSessions={() => setActiveView("problem-list")}
+
+    <div className="w-full lg:w-[280px] flex flex-col gap-6">
+
+        <PracticeSidebar
+            activeView={activeView}
+            onViewChange={(view) => {
+              if (["my-sheet", "bookmarks", "recent-solved"].includes(view)) {
+                if (!ensureLoggedIn()) return;
+              }
+
+              setCurrentPage(1);
+              setSelectedCompanyFilter("All");
+
+              if (view === "topic-wise") {
+                router.push(`/practice?view=${view}&topic=${encodeURIComponent(selectedTopicWise)}`);
+              } else {
+                router.push(`/practice?view=${view}`);
+              }
+            }}
+            solvedCount={stats.solved}
+            dailySolved={stats.dailySolved}
+            weeklySolved={stats.weeklySolved}
+            monthlySolved={stats.monthlySolved}
+            dailyGoal={3}
+            weeklyGoal={10}
+            monthlyGoal={50}
+            streakDays={currentStreak}
+            bestStreak={longestStreak}
+            mySheetCount={sheetCount}
+            onBackToPractice={() => router.push("/")}
+            onBackToSessions={() => setActiveView("problem-list")}
         />
 
-        {/* Center Content */}
-        <div className="flex-1 min-w-0 space-y-6 lg:ml-8">
+        <PracticeRightSidebar
+            solved={stats.solved}
+            attempted={stats.attempted}
+            remaining={stats.remaining}
+            total={stats.total}
+            onViewProgress={() => router.push("/practice?view=dashboard")}
+        />
+
+    </div>
+
+    <div className="flex-1 min-w-0 space-y-6 lg:ml-8">
           
           {/* Main dashboard rendering based on activeView */}
           {activeView === "dashboard" ? (
@@ -678,17 +687,6 @@ export default function PracticePage() {
                     total={stats.total}
                   />
                 </div>
-                {activeView === "problem-list" && (
-                  <div className="w-full lg:w-[260px] flex-shrink-0">
-                    <PracticeRightSidebar 
-                      solved={stats.solved}
-                      attempted={stats.attempted}
-                      remaining={stats.remaining}
-                      total={stats.total}
-                      onViewProgress={() => router.push("/practice?view=dashboard")}
-                    />
-                  </div>
-                )}
               </div>
 
               {/* Tab navigation */}
