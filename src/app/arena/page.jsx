@@ -1456,6 +1456,9 @@ export default function ArenaPage() {
         initialTopic={duelTopic}
         initialDifficulty={duelDifficulty}
         initialTimeLimit={duelTime}
+        initialWager={duelWager}
+        initialMode={duelMode}
+        initialPublic={duelPublic}
       />
 
       <SpectatorSimulatorModal
