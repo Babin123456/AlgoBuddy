@@ -143,13 +143,38 @@ export default function PracticePage() {
     let hardSolved = 0;
     const uniqueCompanies = new Set();
 
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    let dailySolved = 0;
+    let weeklySolved = 0;
+    let monthlySolved = 0;
+
     allProblems.forEach((prob) => {
       const status = getStatus(prob.id);
+      const progInfo = progress[prob.id];
+      const updatedTimeStr = progInfo?.updatedAt || progInfo?.updated_at;
+
       if (status === "Completed") {
         solved++;
         if (prob.difficulty === "Easy") easySolved++;
         else if (prob.difficulty === "Medium") mediumSolved++;
         else if (prob.difficulty === "Hard") hardSolved++;
+
+        if (updatedTimeStr) {
+          const updatedDate = new Date(updatedTimeStr);
+          if (updatedDate >= startOfToday) {
+            dailySolved++;
+          }
+          if (updatedDate >= startOfWeek) {
+            weeklySolved++;
+          }
+          if (updatedDate >= startOfMonth) {
+            monthlySolved++;
+          }
+        }
       } else if (status === "In Progress") {
         attempted++;
       }
@@ -176,10 +201,9 @@ export default function PracticePage() {
 
     return {
       solved,
-      // Prefer server-computed time-window stats; fall back to 0
-      dailySolved: streakData.dailySolved || 0,
-      weeklySolved: streakData.weeklySolved || 0,
-      monthlySolved: streakData.monthlySolved || 0,
+      dailySolved: Math.max(dailySolved, streakData.dailySolved || 0),
+      weeklySolved: Math.max(weeklySolved, streakData.weeklySolved || 0),
+      monthlySolved: Math.max(monthlySolved, streakData.monthlySolved || 0),
       attempted,
       remaining,
       total: allProblems.length,
