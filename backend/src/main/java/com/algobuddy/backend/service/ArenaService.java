@@ -309,10 +309,12 @@ public class ArenaService {
 
         if (!matchIdStr.startsWith("mock-match-")) {
             UUID verifiedWinnerId = verifyMatchResult(matchIdStr, requestingUserId);
-            if (!verifiedWinnerId.equals(requestingUserId)) {
+            if (request.isWinner() && !verifiedWinnerId.equals(requestingUserId)) {
                 throw new SecurityException("Match result conflict: verified winner does not match claim");
             }
-            isWinner = true;
+            if (verifiedWinnerId.equals(requestingUserId)) {
+                isWinner = true;
+            }
         }
         final boolean finalIsWinner = isWinner;
         final int MAX_RETRIES = 3;
