@@ -113,7 +113,10 @@ export function createRateLimiter(options) {
 
     if (shouldTryRedis()) {
       try {
-        const uniqueMember = `${now}-${globalThis.crypto.randomUUID().split('-')[0]}`;
+        const uuidPart = typeof globalThis !== "undefined" && globalThis.crypto?.randomUUID
+          ? globalThis.crypto.randomUUID().split("-")[0]
+          : Math.random().toString(36).substring(2, 10);
+        const uniqueMember = `${now}-${uuidPart}`;
         const result = await redis
           .pipeline()
           .zadd(redisKey, { score: now, member: uniqueMember })
