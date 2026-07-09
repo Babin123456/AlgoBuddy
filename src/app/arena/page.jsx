@@ -647,13 +647,6 @@ export default function ArenaPage() {
 
             {activeTab !== "home" && (
               <div className="bg-white dark:bg-neutral-800 border border-slate-100 dark:border-neutral-800/80 rounded-2xl p-6 shadow-sm min-h-[400px] flex flex-col justify-center items-center text-center">
-                <Swords size={48} className="text-slate-300 dark:text-neutral-750 mb-3 animate-pulse" />
-                <h3 className="text-base font-bold text-slate-800 dark:text-neutral-200 capitalize mb-1">
-                  {activeTab.replace("-", " ")} Section
-                </h3>
-                <p className="text-xs text-slate-400 dark:text-neutral-500 max-w-xs leading-normal mb-6">
-                  Access matchmaking controls, leaderboards, or customize your profile values directly from the side panels.
-                </p>
 
                 {activeTab === "live" && (
                   <div className="w-full max-w-md space-y-3 text-left">
