@@ -257,7 +257,7 @@ export default function Navbar() {
                   {avatarSrc ? (
                     <Image
                       src={avatarSrc}
-                      alt="avatar"
+                      alt={`${displayName}'s avatar`}
                       width={28}
                       height={28}
                       unoptimized
@@ -272,7 +272,7 @@ export default function Navbar() {
                   <span className="max-w-28 truncate text-sm font-semibold">
                     {displayName}
                   </span>
-                  <ChevronDown className="w-3.5 h-3.5 text-surface-500" />
+                  <ChevronDown className="w-3.5 h-3.5 text-surface-500" aria-hidden="true" />
                 </button>
 
                 {userMenuOpen && (
@@ -399,15 +399,15 @@ export default function Navbar() {
               onClick={() =>
                 setMenuOpen((o) => !o)
               }
-              aria-label="Toggle menu"
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
               aria-expanded={menuOpen}
               aria-controls="mobile-menu"
-              className="hidden"
+              className="w-10 h-10 flex items-center justify-center text-surface-600 dark:text-surface-400 rounded-lg hover:bg-surface-100 dark:hover:bg-udemy-dark-surface transition-colors focus-ring"
             >
               {menuOpen ? (
-                <X className="w-5 h-5" />
+                <X className="w-5 h-5" aria-hidden="true" />
               ) : (
-                <Menu className="w-5 h-5" />
+                <Menu className="w-5 h-5" aria-hidden="true" />
               )}
             </button>
           </div>
