@@ -109,9 +109,7 @@ const redisClient = pubClient.duplicate();
 
 // Phase 1: Atomically pop an opponent from the queue WITHOUT creating match state
 const ATOMIC_POP_OPPONENT_SCRIPT = `
-  local function sanitize(str)
-    return string.gsub(string.gsub(str, '\\\\', '\\\\\\\\'), '"', '\\\\"')
-  end
+  local cjson = require("cjson")
   local queueKey = KEYS[1]
   local socketKey = KEYS[2]
   local entry = ARGV[1]
@@ -124,11 +122,9 @@ const ATOMIC_POP_OPPONENT_SCRIPT = `
     local elements = redis.call('LRANGE', existingQueueKey, 0, -1)
     if elements and #elements > 0 then
       for i = 1, #elements do
-        local el = elements[i]
-        local p_socketId = string.match(el, '"socketId"%s*:%s*"([^"]+)"')
-        local p_userId = string.match(el, '"userId"%s*:%s*"([^"]+)"')
-        if p_socketId == socketId or p_userId == userId then
-          redis.call('LREM', existingQueueKey, 0, el)
+        local el = cjson.decode(elements[i])
+        if el.socketId == socketId or el.userId == userId then
+          redis.call('LREM', existingQueueKey, 0, elements[i])
         end
       end
     end
@@ -141,20 +137,24 @@ const ATOMIC_POP_OPPONENT_SCRIPT = `
       break
     end
 
-    local oppUserId = string.match(opponentStr, '"userId"%s*:%s*"([^"]+)"')
-    local oppSocketId = string.match(opponentStr, '"socketId"%s*:%s*"([^"]+)"')
-    local oppName = string.match(opponentStr, '"name"%s*:%s*"([^"]+)"') or 'Player'
-    local oppRating = string.match(opponentStr, '"rating"%s*:%s*(%d+)') or '1200'
-    local oppLevel = string.match(opponentStr, '"level"%s*:%s*(%d+)') or '1'
-
-    if oppUserId == userId then
+    local opp = cjson.decode(opponentStr)
+    if opp.userId == userId then
       table.insert(skipList, opponentStr)
     else
       for i = #skipList, 1, -1 do
         redis.call('RPUSH', queueKey, skipList[i])
       end
       redis.call('HSET', socketKey, 'queueKey', queueKey)
-      return '{"status":"MATCH_FOUND","opponent":{"userId":"' .. sanitize(oppUserId) .. '","socketId":"' .. sanitize(oppSocketId) .. '","name":"' .. sanitize(oppName) .. '","rating":' .. oppRating .. ',"level":' .. oppLevel .. '}}'
+      return cjson.encode({
+        status = "MATCH_FOUND",
+        opponent = {
+          userId = opp.userId,
+          socketId = opp.socketId,
+          name = opp.name or "Player",
+          rating = tonumber(opp.rating) or 1200,
+          level = tonumber(opp.level) or 1
+        }
+      })
     end
   end
 
@@ -165,17 +165,15 @@ const ATOMIC_POP_OPPONENT_SCRIPT = `
   local elements = redis.call('LRANGE', queueKey, 0, -1)
   if elements and #elements > 0 then
     for i = 1, #elements do
-      local el = elements[i]
-      local p_socketId = string.match(el, '"socketId"%s*:%s*"([^"]+)"')
-      local p_userId = string.match(el, '"userId"%s*:%s*"([^"]+)"')
-      if p_socketId == socketId or p_userId == userId then
-        redis.call('LREM', queueKey, 0, el)
+      local el = cjson.decode(elements[i])
+      if el.socketId == socketId or el.userId == userId then
+        redis.call('LREM', queueKey, 0, elements[i])
       end
     end
   end
   redis.call('RPUSH', queueKey, entry)
   redis.call('HSET', socketKey, 'queueKey', queueKey)
-  return '{"status":"QUEUED"}'
+  return cjson.encode({ status = "QUEUED" })
 `;
 
       // Phase 2: Atomically create match state (only called after JS confirms liveness)
@@ -197,6 +195,7 @@ const ATOMIC_POP_OPPONENT_SCRIPT = `
 `;
 
 const ATOMIC_LEAVE_MATCHMAKING_SCRIPT = `
+  local cjson = require("cjson")
   local socketKey = KEYS[1]
   local userId = ARGV[1]
   local socketId = ARGV[2]
@@ -206,11 +205,9 @@ const ATOMIC_LEAVE_MATCHMAKING_SCRIPT = `
     local elements = redis.call('LRANGE', existingQueueKey, 0, -1)
     if elements and #elements > 0 then
       for i = 1, #elements do
-        local el = elements[i]
-        local p_socketId = string.match(el, '"socketId"%s*:%s*"([^"]+)"')
-        local p_userId = string.match(el, '"userId"%s*:%s*"([^"]+)"')
-        if p_socketId == socketId or p_userId == userId then
-          redis.call('LREM', existingQueueKey, 0, el)
+        local el = cjson.decode(elements[i])
+        if el.socketId == socketId or el.userId == userId then
+          redis.call('LREM', existingQueueKey, 0, elements[i])
         end
       end
     end
@@ -223,58 +220,56 @@ const ATOMIC_LEAVE_MATCHMAKING_SCRIPT = `
 // without race conditions. Using a single script eliminates the TOCTOU gap
 // between separate disconnect and complete scripts.
 const ATOMIC_MATCH_UPDATE_SCRIPT = `
-  local function sanitize(str)
-    return string.gsub(string.gsub(str, '\\\\', '\\\\\\\\'), '"', '\\\\"')
-  end
+  local cjson = require("cjson")
   local matchKey = KEYS[1]
   local action = ARGV[1]
   local actorUserId = ARGV[2]
 
   local matchStr = redis.call('GET', matchKey)
-  if not matchStr then return '{"status":"not_found"}' end
+  if not matchStr then return cjson.encode({ status = "not_found" }) end
+
+  local match = cjson.decode(matchStr)
 
   -- Check if the match is already finalized
-  if string.find(matchStr, '"status"%s*:%s*"completed"') then
-    return '{"status":"already_completed"}'
+  if match.status == "completed" then
+    return cjson.encode({ status = "already_completed" })
   end
-  if action == "disconnect" and string.find(matchStr, '"status"%s*:%s*"disconnected"') then
-    return '{"status":"already_disconnected"}'
+  if action == "disconnect" and match.status == "disconnected" then
+    return cjson.encode({ status = "already_disconnected" })
   end
 
   if action == "complete" then
-    -- Mark as completed with winner
-    local updated = string.gsub(matchStr, '"status"%s*:%s*"[^"]+"', '"status":"completed"')
-    if string.find(updated, '"winnerId"') then
-      updated = string.gsub(updated, '"winnerId"%s*:%s*"[^"]+"', '"winnerId":"' .. sanitize(actorUserId) .. '"')
-    else
-      updated = string.gsub(updated, '}%s*$', ',"winnerId":"' .. sanitize(actorUserId) .. '"}')
-    end
-    redis.call('SET', matchKey, updated, 'EX', 3600)
-    -- Extract opponent socketId for notification (match userId, not socketId)
+    match.status = "completed"
+    match.winnerId = actorUserId
+    redis.call('SET', matchKey, cjson.encode(match), 'EX', 3600)
+    -- Extract opponent socketId for notification
     local opponentSocketId = ''
-    for uId, sId in string.gmatch(updated, '"userId"%s*:%s*"([^"]+)"[^}]+"socketId"%s*:%s*"([^"]+)"') do
-      if uId ~= actorUserId then
-        opponentSocketId = sId
+    if match.players then
+      for _, p in ipairs(match.players) do
+        if p.userId ~= actorUserId then
+          opponentSocketId = p.socketId
+        end
       end
     end
-    return '{"status":"completed","winnerId":"' .. sanitize(actorUserId) .. '","opponentSocketId":"' .. sanitize(opponentSocketId) .. '"}'
+    return cjson.encode({ status = "completed", winnerId = actorUserId, opponentSocketId = opponentSocketId })
 
   elseif action == "disconnect" then
-    -- Set disconnected — the remaining player claims win via match_complete
-    local updated = string.gsub(matchStr, '"status"%s*:%s*"[^"]+"', '"status":"disconnected"')
-    redis.call('SET', matchKey, updated, 'EX', 3600)
-    -- Extract opponent info (match userId, not socketId)
+    match.status = "disconnected"
+    redis.call('SET', matchKey, cjson.encode(match), 'EX', 3600)
+    -- Extract opponent info
     local opponentSocketId = ''
     local opponentUserId = ''
-    for uId, sId in string.gmatch(matchStr, '"userId"%s*:%s*"([^"]+)"[^}]+"socketId"%s*:%s*"([^"]+)"') do
-      if uId ~= actorUserId then
-        opponentUserId = uId
-        opponentSocketId = sId
+    if match.players then
+      for _, p in ipairs(match.players) do
+        if p.userId ~= actorUserId then
+          opponentUserId = p.userId
+          opponentSocketId = p.socketId
+        end
       end
     end
-    return '{"status":"disconnected","opponentSocketId":"' .. sanitize(opponentSocketId) .. '","opponentUserId":"' .. sanitize(opponentUserId) .. '"}'
+    return cjson.encode({ status = "disconnected", opponentSocketId = opponentSocketId, opponentUserId = opponentUserId })
   end
-  return '{"status":"unknown_action"}'
+  return cjson.encode({ status = "unknown_action" })
 `;
 
 const io = new Server(server, {
@@ -783,9 +778,8 @@ io.on("connection", async (socket) => {
         const elements = await redisClient.lrange(existingQueueKey, 0, -1);
         if (elements && elements.length > 0) {
           for (const el of elements) {
-            const pSocketId = el.match(/"socketId"\s*:\s*"([^"]+)"/)?.[1];
-            const pUserId = el.match(/"userId"\s*:\s*"([^"]+)"/)?.[1];
-            if (pSocketId === socket.id || pUserId === socket.data.userId) {
+            const parsed = JSON.parse(el);
+            if (parsed.socketId === socket.id || parsed.userId === socket.data.userId) {
               await redisClient.lrem(existingQueueKey, 0, el);
             }
           }
