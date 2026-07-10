@@ -7,6 +7,38 @@ import ComplexityTable from "./ComplexityTable";
 import CodeSnippet from "./CodeSnippet";
 import { allCheatsheets } from "./data";
 
+const practiceProblemsById = {
+  "binary-search": {
+    easy: ["Search Insert Position"],
+    medium: ["Find Peak Element"],
+    hard: ["Median of Two Sorted Arrays"],
+  },
+  "hash-map": {
+    easy: ["Two Sum"],
+    medium: ["Group Anagrams"],
+    hard: ["Substring with Concatenation of All Words"],
+  },
+  "linear-search": {
+    easy: ["Find the First Occurrence"],
+    medium: ["Count Target Occurrences"],
+    hard: ["Minimum Subarray Cover"],
+  },
+  "jump-search": {
+    easy: ["Implement Jump Search"],
+    medium: ["Search in a Large Sorted Array"],
+    hard: ["Block-Based Search Strategy"],
+  },
+  default: {
+    easy: ["Practice the basic implementation"],
+    medium: ["Solve a standard interview variation"],
+    hard: ["Combine the technique with another pattern"],
+  },
+};
+
+function getPracticeProblems(id) {
+  return practiceProblemsById[id] || practiceProblemsById.default;
+}
+
 
 function SectionCard({ id, title, children, tone = "slate" }) {
   const toneClasses =
@@ -64,7 +96,8 @@ export default function CheatsheetDetail({ cheatsheet }) {
   const overview =
     cheatsheet.overview ||
     `${title} is a quick-reference guide for solving problems with the ${title.toLowerCase()} pattern.`;
- 
+  const practiceProblems = getPracticeProblems(id);
+
 
   return (
     <div className="mx-auto max-w-7xl" id="cheatsheet-content">
@@ -226,6 +259,30 @@ export default function CheatsheetDetail({ cheatsheet }) {
               </div>
             </SectionCard>
           )}
+          <SectionCard id="practice-problems" title="Practice Problems">
+            <div className="grid gap-4 md:grid-cols-3">
+              {Object.entries({
+                Easy: practiceProblems.easy,
+                Medium: practiceProblems.medium,
+                Hard: practiceProblems.hard,
+              }).map(([difficultyLabel, problems]) => (
+                <div
+                  key={difficultyLabel}
+                  className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900/60"
+                >
+                  <h3 className="text-sm font-semibold text-slate-900 dark:text-white">{difficultyLabel}</h3>
+                  <ul className="mt-3 space-y-2 text-sm text-slate-600 dark:text-slate-400">
+                    {problems.map((problem) => (
+                      <li key={problem} className="flex gap-2">
+                        <span className="text-[#a435f0]">-</span>
+                        <span>{problem}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </SectionCard>
         </main>
       </div>
     </div>
