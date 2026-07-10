@@ -58,7 +58,7 @@ export function* dijkstraGenerator(adj, startNode, targetNode = null) {
     const neighbors = adj[u] || [];
     for (const edge of neighbors) {
       const v = edge.node;
-      const weight = edge.weight;
+      const weight = Number(edge.weight);
 
       if (!visited.has(v)) {
         const newDist = distances[u] + weight;
