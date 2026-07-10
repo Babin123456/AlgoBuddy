@@ -1,6 +1,8 @@
+import { getEnv, isEnvConfigured } from "./env.js";
+
 export function getCaptchaSecret() {
-  const secret = process.env.TURNSTILE_SECRET_KEY;
-  if (!secret || secret === "undefined") {
+  const secret = getEnv("TURNSTILE_SECRET_KEY");
+  if (!secret) {
     throw new Error('CAPTCHA_CONFIG_MISSING');
   }
   return secret;
@@ -15,7 +17,6 @@ export function getCaptchaSecret() {
  */
 export async function verifyTurnstile(captchaToken, opts = {}) {
   const secretKey = getCaptchaSecret();
-  console.error('Turnstile config valid:', !!secretKey);
 
   const token = String(captchaToken || "").trim();
   if (!token) {
@@ -44,8 +45,6 @@ export async function verifyTurnstile(captchaToken, opts = {}) {
   }
 
   const data = await response.json().catch(() => null);
-  
-  console.error('Turnstile verify success:', !!data?.success);
 
   if (!data?.success) {
     const errorCodes = data?.["error-codes"] || [];

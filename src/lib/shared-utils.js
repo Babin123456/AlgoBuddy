@@ -1,18 +1,10 @@
-function isValidHttpUrl(value) {
-  try {
-    const parsed = new URL(value);
-    return parsed.protocol === "http:" || parsed.protocol === "https:";
-  } catch {
-    return false;
-  }
-}
+import { getEnv, isEnvConfigured, validateEnv } from "./env.js";
 
 function getSupabaseConfig() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabaseUrl = getEnv("NEXT_PUBLIC_SUPABASE_URL");
+  const supabaseAnonKey = getEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY");
 
   if (!supabaseUrl || !supabaseAnonKey) return null;
-  if (!isValidHttpUrl(supabaseUrl)) return null;
 
   let finalUrl = String(supabaseUrl).trim();
   if (finalUrl.startsWith("http://localhost:")) {
@@ -24,7 +16,7 @@ function getSupabaseConfig() {
     supabaseAnonKey: String(supabaseAnonKey).trim(),
   };
 
-  const serviceKey = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const serviceKey = getEnv("SUPABASE_SERVICE_KEY") || getEnv("SUPABASE_SERVICE_ROLE_KEY");
   if (serviceKey) {
     config.supabaseServiceKey = String(serviceKey).trim();
   }
@@ -41,4 +33,4 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
-export { isValidHttpUrl, getSupabaseConfig, escapeHtml };
+export { getSupabaseConfig, escapeHtml };

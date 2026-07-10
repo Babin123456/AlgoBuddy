@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { getSupabaseConfig as _getSupabaseConfig } from "./shared-utils.js";
+import { getEnv } from "./env.js";
 
 // For testing purposes, allow overriding the dependency functions
 let cookiesImpl = null;
@@ -13,7 +14,7 @@ export function setMockDependencies(cookies, createServerClient) {
 export function getSupabaseConfig() {
   const config = _getSupabaseConfig();
   if (!config) return null;
-  const serviceKey = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const serviceKey = getEnv("SUPABASE_SERVICE_KEY") || getEnv("SUPABASE_SERVICE_ROLE_KEY");
   if (!serviceKey || String(serviceKey).trim().startsWith("Your ")) return null;
   config.supabaseServiceKey = String(serviceKey).trim();
   return config;

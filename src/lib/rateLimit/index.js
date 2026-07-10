@@ -1,6 +1,7 @@
 import { Redis } from "@upstash/redis";
 import { jwtVerify, createRemoteJWKSet } from "jose";
 import { getClientIp } from "../getClientIp.js";
+import { getEnv } from "../env.js";
 
 const RATE_LIMIT_KEY_PREFIX = "rl";
 const MAX_IN_MEMORY_ENTRIES = 10000;
@@ -38,10 +39,10 @@ function startMemorySweeper() {
   if (memorySweepTimer.unref) memorySweepTimer.unref();
 }
 
-const REDIS_REQUIRED = process.env.REDIS_REQUIRED === "true";
+const REDIS_REQUIRED = getEnv("REDIS_REQUIRED") === "true";
 
 const redis =
-  process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+  getEnv("UPSTASH_REDIS_REST_URL") && getEnv("UPSTASH_REDIS_REST_TOKEN")
     ? Redis.fromEnv()
     : null;
 
@@ -169,7 +170,8 @@ export function createRateLimiter(options) {
       return { allowed: false, remaining: 0, retryAfter, resetAt: Date.now() + retryAfter * 1000 };
     }
 
-    if (process.env.NODE_ENV === "production" && !redis) {
+    const isProduction = getEnv("NODE_ENV") === "production";
+    if (isProduction && !redis) {
       console.warn("Critical: Redis connection variables (UPSTASH_REDIS_REST_URL/TOKEN) are not configured in production. Using in-memory fallback.");
     }
 
@@ -226,7 +228,7 @@ export const sandboxLimiter = createRateLimiter({ maxRequests: 10, windowSeconds
 export const chatbotLimiter = createRateLimiter({ maxRequests: 10, windowSeconds: 60, prefix: "chatbot" });
 
 export function shouldBypassRateLimit() {
-  return process.env.DISABLE_RATE_LIMIT === "true";
+  return getEnv("DISABLE_RATE_LIMIT") === "true";
 }
 
 export async function checkRateLimit(key) {
@@ -307,7 +309,7 @@ const ATOMIC_SMTP_QUOTA_SCRIPT = `
 
 export async function checkGlobalSmtpQuota(maxPerDay = 500) {
   if (!redis) {
-    if (process.env.NODE_ENV === "production") {
+    if (getEnv("NODE_ENV") === "production") {
       console.warn("[smtp-quota] Redis unavailable in production — SMTP quota not enforced across instances");
     }
     const today = new Date().toISOString().split("T")[0];

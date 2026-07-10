@@ -1,14 +1,27 @@
 import { createClient } from "@supabase/supabase-js";
 import { createServerClient } from "@supabase/ssr";
 import { ApiError, AuthError, ConfigError } from "@/lib/apiErrors";
+import { getEnv, validateEnv } from "@/lib/env.js";
 
 let supabaseAdminInstance;
 
+function requireSupabaseUrl() {
+  const url = getEnv("NEXT_PUBLIC_SUPABASE_URL");
+  if (!url) throw new ConfigError('Supabase not configured: NEXT_PUBLIC_SUPABASE_URL is missing');
+  return url;
+}
+
+function requireAnonKey() {
+  const key = getEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY");
+  if (!key) throw new ConfigError('Supabase not configured: NEXT_PUBLIC_SUPABASE_ANON_KEY is missing');
+  return key;
+}
+
 export function getSupabaseAdmin() {
   if (supabaseAdminInstance) return supabaseAdminInstance;
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_KEY;
-  if (!url || !key) throw new ConfigError('Supabase not configured');
+  const url = requireSupabaseUrl();
+  const key = getEnv("SUPABASE_SERVICE_KEY");
+  if (!key) throw new ConfigError('Supabase not configured: SUPABASE_SERVICE_KEY is missing');
   supabaseAdminInstance = createClient(url, key);
   return supabaseAdminInstance;
 }
@@ -20,9 +33,9 @@ export function getSupabaseAdmin() {
  * Requires a cookie store (from next/headers cookies()) for SSR auth.
  */
 export function getSupabaseServerClient(cookieStore) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !anonKey) throw new ConfigError('Supabase not configured');
+  const url = requireSupabaseUrl();
+  const anonKey = requireAnonKey();
+  const isProduction = getEnv("NODE_ENV") === "production";
   return createServerClient(url, anonKey, {
     cookies: {
       getAll() {
@@ -34,7 +47,7 @@ export function getSupabaseServerClient(cookieStore) {
             cookieStore.set(name, value, {
               ...options,
               sameSite: 'strict',
-              secure: process.env.NODE_ENV === 'production',
+              secure: isProduction,
             });
           } catch {
             // Can happen during GET requests or rendering in Next.js
@@ -50,9 +63,8 @@ export function getSupabaseServerClient(cookieStore) {
  * Alternative for route handlers that don't have access to next/headers cookies().
  */
 export function getSupabaseRequestClient(request) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !anonKey) throw new ConfigError('Supabase not configured');
+  const url = requireSupabaseUrl();
+  const anonKey = requireAnonKey();
   return createServerClient(url, anonKey, {
     cookies: {
       getAll() {
@@ -69,9 +81,8 @@ export function getSupabaseRequestClient(request) {
 
 /** Anonymous Supabase client for public reads (no session cookies). */
 export function getSupabaseAnonClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !anonKey) throw new ConfigError('Supabase not configured');
+  const url = requireSupabaseUrl();
+  const anonKey = requireAnonKey();
   return createClient(url, anonKey);
 }
 

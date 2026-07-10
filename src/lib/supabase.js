@@ -1,6 +1,8 @@
 import { createBrowserClient } from "@supabase/ssr";
 import { getSupabaseConfig } from "./shared-utils.js";
+import { validateEnv } from "./env.js";
 
+const supabaseValidation = validateEnv("SUPABASE");
 const SUPABASE_ENV_ERROR =
   "Missing NEXT_PUBLIC_SUPABASE_URL and/or NEXT_PUBLIC_SUPABASE_ANON_KEY. Copy .env.example to .env.local and add your Supabase project URL and anon key.";
 
