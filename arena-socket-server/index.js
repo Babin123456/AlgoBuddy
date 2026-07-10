@@ -986,7 +986,6 @@ app.get("/health", (req, res) => {
   res.json({ status: "Arena Socket Server is running with Redis!" });
 });
 
-
 app.get("/api/matches/active", async (req, res) => {
   try {
     const matchKeys = await scanRedisKeys("{arena}:match:*");
