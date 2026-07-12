@@ -8,6 +8,6 @@ const NavigationLink = memo(function NavigationLink({ href, text, className = ''
       </a>
     </div>
   );
-};
+});
 
 export default NavigationLink;
