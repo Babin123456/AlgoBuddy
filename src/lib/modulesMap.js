@@ -39,6 +39,7 @@ export const MODULE_MAPS = {
     redBlackTree: "3c988a8d-2fb3-4f9e-8c76-f831b1bfbe9d",
     bTree: "df943bc7-3b2d-45f8-8a8b-c9dfa515cbe9",
     segmentTree: "81e9f8ad-2df3-4eb8-bb1a-f3762bcab48e",
+    segmentTree2D: "segment-tree-2d-001",
     fenwickTree: "28e7fa8d-56f7-43f2-8be2-723a4b92b67e",
     heapSort: "e67a57a1-8d2a-4467-8e1f-7b1980838ea5",
     heapVisualizer: "heap-visualizer-001",
