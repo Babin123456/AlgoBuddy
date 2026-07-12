@@ -54,7 +54,7 @@ public class ArenaService {
         }
     }
 
-    @Cacheable(value = "arenaProfile", key = "#userId", unless = "#result == null")
+    @Transactional
     public ArenaProfileResponse getProfile(UUID userId) {
         if (!profileRepository.existsById(userId)) {
             try {
@@ -64,12 +64,35 @@ public class ArenaService {
             }
         }
         
-        ArenaLeaderboardProjection projection = profileRepository.findProfileWithUserDetails(userId)
-                .orElseThrow(() -> new IllegalStateException("Profile not found after creation"));
+        ArenaProfileResponse cachedProfile = null;
+        org.springframework.cache.Cache cache = cacheManager.getCache("arenaProfile");
+        if (cache != null) {
+            cachedProfile = cache.get(userId, ArenaProfileResponse.class);
+        }
+        
+        if (cachedProfile == null) {
+            ArenaLeaderboardProjection projection = profileRepository.findProfileWithUserDetails(userId)
+                    .orElseThrow(() -> new IllegalStateException("Profile not found after creation"));
+            cachedProfile = mapProjectionToResponse(projection, null);
+            if (cache != null) {
+                cache.put(userId, cachedProfile);
+            }
+        }
         
         Integer rank = calculateRank(userId);
         
-        return mapProjectionToResponse(projection, rank);
+        return ArenaProfileResponse.builder()
+                .userId(cachedProfile.getUserId())
+                .xp(cachedProfile.getXp())
+                .level(cachedProfile.getLevel())
+                .rating(cachedProfile.getRating())
+                .battlesWon(cachedProfile.getBattlesWon())
+                .battlesLost(cachedProfile.getBattlesLost())
+                .totalProblemsSolved(cachedProfile.getTotalProblemsSolved())
+                .rank(rank)
+                .name(cachedProfile.getName())
+                .avatarUrl(cachedProfile.getAvatarUrl())
+                .build();
     }
     
     @Transactional(readOnly = true)
