@@ -1509,6 +1509,41 @@ export default function ArenaPage() {
                     )}
                   </div>
                 )}
+                
+                {activeTab === "badges" && (
+                  <div className="w-full text-left space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
+                    {/* Hero Section */}
+                    <div className="bg-gradient-to-br from-amber-600 via-orange-500 to-red-500 rounded-3xl p-8 relative overflow-hidden text-white flex flex-col md:flex-row items-center justify-between shadow-2xl shadow-orange-500/20">
+                      {/* Abstract Background Shapes */}
+                      <div className="absolute top-0 right-0 -mt-20 -mr-20 w-64 h-64 bg-white/20 rounded-full blur-3xl pointer-events-none"></div>
+                      <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-64 h-64 bg-yellow-400/20 rounded-full blur-3xl pointer-events-none"></div>
+                      
+                      <div className="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+                        <Crown size={300} className="text-white transform rotate-12" />
+                      </div>
+                      
+                      <div className="space-y-4 z-10 text-center md:text-left flex-1">
+                        <span className="text-[10px] bg-white/20 text-white font-bold uppercase tracking-wider px-3 py-1.5 rounded-full inline-block mb-2 backdrop-blur-sm border border-white/30 shadow-[0_0_15px_rgba(255,255,255,0.2)]">
+                          Achievement Unlocked
+                        </span>
+                        <h2 className="text-4xl md:text-5xl font-black tracking-tight drop-shadow-md">
+                          Your Badges
+                        </h2>
+                        <p className="text-orange-100 max-w-lg text-sm md:text-base font-medium drop-shadow">
+                          Showcase your algorithmic mastery. Earn exclusive badges by completing challenges, winning tournaments, and maintaining long streaks.
+                        </p>
+                      </div>
+                      
+                      <div className="mt-8 md:mt-0 z-10 bg-white/10 p-5 rounded-2xl backdrop-blur-md border border-white/20 flex flex-col items-center min-w-[160px] shadow-xl">
+                        <span className="text-xs font-bold uppercase tracking-wider text-orange-200 mb-2">Total Earned</span>
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-5xl font-black text-white drop-shadow-md">12</span>
+                          <span className="text-lg font-bold text-orange-300">/ 50</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </main>
