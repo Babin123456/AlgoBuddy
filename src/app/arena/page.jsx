@@ -1542,6 +1542,33 @@ export default function ArenaPage() {
                         </div>
                       </div>
                     </div>
+
+                    {/* Badges Grid */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                      {[
+                        { title: "First Blood", desc: "Win your first duel", icon: <Award size={24} />, earned: true, color: "text-amber-500", bg: "bg-amber-500/10", border: "border-amber-500/20" },
+                        { title: "Hot Streak", desc: "Win 3 duels in a row", icon: <Flame size={24} />, earned: true, color: "text-red-500", bg: "bg-red-500/10", border: "border-red-500/20" },
+                        { title: "Speed Demon", desc: "Solve under 2 minutes", icon: <Zap size={24} />, earned: true, color: "text-yellow-500", bg: "bg-yellow-500/10", border: "border-yellow-500/20" },
+                        { title: "Champion", desc: "Win a weekly tournament", icon: <Trophy size={24} />, earned: false, color: "text-slate-400", bg: "bg-slate-100 dark:bg-neutral-800", border: "border-slate-200 dark:border-neutral-700" },
+                        { title: "Flawless", desc: "No syntax errors in a match", icon: <Star size={24} />, earned: false, color: "text-slate-400", bg: "bg-slate-100 dark:bg-neutral-800", border: "border-slate-200 dark:border-neutral-700" },
+                        { title: "Grandmaster", desc: "Reach 10,000 XP", icon: <Crown size={24} />, earned: false, color: "text-slate-400", bg: "bg-slate-100 dark:bg-neutral-800", border: "border-slate-200 dark:border-neutral-700" },
+                        { title: "Defender", desc: "Block 5 hacks", icon: <ShieldCheck size={24} />, earned: true, color: "text-emerald-500", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
+                        { title: "Veteran", desc: "Play 100 matches", icon: <Users size={24} />, earned: false, color: "text-slate-400", bg: "bg-slate-100 dark:bg-neutral-800", border: "border-slate-200 dark:border-neutral-700" },
+                      ].map((badge, idx) => (
+                        <div key={idx} className={`relative p-5 rounded-2xl border flex flex-col items-center text-center transition-all duration-300 ${badge.earned ? `${badge.border} bg-white dark:bg-neutral-800 shadow-sm hover:shadow-md hover:-translate-y-1` : `${badge.border} ${badge.bg} opacity-60 grayscale hover:grayscale-0`}`}>
+                          <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-3 ${badge.bg} ${badge.color}`}>
+                            {badge.icon}
+                          </div>
+                          <h4 className={`font-bold text-sm mb-1 ${badge.earned ? 'text-slate-800 dark:text-neutral-100' : 'text-slate-500 dark:text-neutral-400'}`}>{badge.title}</h4>
+                          <p className="text-[10px] text-slate-500 dark:text-neutral-400 leading-tight">{badge.desc}</p>
+                          {!badge.earned && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-slate-900/5 dark:bg-black/20 rounded-2xl opacity-0 hover:opacity-100 transition-opacity">
+                              <span className="text-xs font-bold text-slate-700 dark:text-neutral-300 bg-white/90 dark:bg-neutral-800/90 px-2 py-1 rounded shadow-sm backdrop-blur-sm">Locked</span>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
