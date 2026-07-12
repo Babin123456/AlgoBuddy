@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState, useMemo, useCallback } from "react";
-import { 
+import {
   Settings2,
   BarChart3,
-  Info
+  Info,
+  Wand2
 } from "lucide-react";
 import { 
   BarChart, 
@@ -579,6 +580,58 @@ export default function GraphVisualizer({ algorithm = "bfs", startNode: initialS
     engine.reset();
   };
 
+  const generateRandomGraph = useCallback(() => {
+    const input = window.prompt("Enter number of nodes (max 20):", "6");
+    if (!input) return;
+    const count = parseInt(input, 10);
+    if (isNaN(count) || count < 2 || count > 20) {
+      alert("Please enter a valid number between 2 and 20.");
+      return;
+    }
+
+    const newNodes = [];
+    for (let i = 0; i < count; i++) {
+      newNodes.push({
+        id: String(i),
+        x: Math.floor(Math.random() * 600) + 100,
+        y: Math.floor(Math.random() * 300) + 50,
+        label: String(i),
+      });
+    }
+
+    const newEdges = [];
+    for (let i = 1; i < count; i++) {
+      const parent = Math.floor(Math.random() * i);
+      newEdges.push({
+        from: String(parent),
+        to: String(i),
+        weight: isWeighted ? Math.floor(Math.random() * 20) + 1 : 1,
+        directed: isDirected
+      });
+    }
+
+    const extraEdges = Math.floor(count * 0.5);
+    for (let i = 0; i < extraEdges; i++) {
+      const fromIdx = Math.floor(Math.random() * count);
+      const toIdx = Math.floor(Math.random() * count);
+      if (fromIdx !== toIdx) {
+        const exists = newEdges.some(e => (e.from === String(fromIdx) && e.to === String(toIdx)) || (!isDirected && e.from === String(toIdx) && e.to === String(fromIdx)));
+        if (!exists) {
+          newEdges.push({
+            from: String(fromIdx),
+            to: String(toIdx),
+            weight: isWeighted ? Math.floor(Math.random() * 20) + 1 : 1,
+            directed: isDirected
+          });
+        }
+      }
+    }
+
+    setNodes(newNodes);
+    setEdges(newEdges);
+    engine.reset();
+  }, [isWeighted, isDirected, engine]);
+
   const reverseEdge = (edgeIndex) => {
     setEdges((current) =>
       current.map((edge, index) =>
@@ -604,6 +657,16 @@ export default function GraphVisualizer({ algorithm = "bfs", startNode: initialS
               <Settings2 className="h-4 w-4" />
               {isEditing ? "Editing Mode" : "Visualization Mode"}
             </button>
+
+            {isEditing && (
+              <button
+                onClick={generateRandomGraph}
+                className="flex items-center gap-2 rounded-lg bg-indigo-100 px-3 py-1.5 text-sm font-medium text-indigo-700 transition-colors hover:bg-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-400 dark:hover:bg-indigo-900/50"
+              >
+                <Wand2 className="h-4 w-4" />
+                Random Graph
+              </button>
+            )}
 
             {["dijkstra", "a-star", "ford-fulkerson"].includes(algorithm) && (
               <div className="flex items-center gap-2 ml-2">
