@@ -17,6 +17,26 @@ const DS_THEME = {
       </svg>
     ),
   },
+  String: {
+    color: "#ec4899",
+    bg: "#fdf2f8",
+    border: "#fbcfe8",
+    icon: (c) => (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke={c}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="w-full h-full"
+      >
+        <path d="M7 8h10" />
+        <path d="M7 12h8" />
+        <path d="M7 16h6" />
+      </svg>
+    ),
+  },
   Stack: {
     color: "#2563eb",
     bg: "#eff6ff",
@@ -393,8 +413,31 @@ function DPMiniViz({ color }) {
   );
 }
 
+function StringMiniViz({ color }) {
+  const chars = ["H", "E", "L", "L", "O"];
+
+  return (
+    <div className="flex items-center justify-center gap-2 h-[48px]">
+      {chars.map((ch, index) => (
+        <div
+          key={index}
+          className="w-8 h-8 rounded-md flex items-center justify-center font-bold text-sm border transition-all"
+          style={{
+            background: index === 2 ? color : color + "20",
+            borderColor: color,
+            color: index === 2 ? "#fff" : color,
+          }}
+        >
+          {ch}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 const MINI_VIZ = {
   Array: ArrayMiniViz,
+  String: StringMiniViz,
   Stack: StackMiniViz,
   Queue: QueueMiniViz,
   "Linked List": LinkedListMiniViz,
@@ -577,6 +620,7 @@ export default function VisualizerClient({ initialSections }) {
       <style>{`
         .dark [data-theme-card="Code Lab"] { background: #2d2f31 !important; border-color: #4b5563 !important; }
         .dark [data-theme-card="Array"] { background: #1a0e2d !important; border-color: #5b21b6 !important; }
+        .dark [data-theme-card="String"] { background: #2d1023 !important; border-color: #be185d !important;}
         .dark [data-theme-card="Stack"] { background: #111d33 !important; border-color: #1e3a8a !important; }
         .dark [data-theme-card="Queue"] { background: #122b19 !important; border-color: #166534 !important; }
         .dark [data-theme-card="Linked List"] { background: #2b1a08 !important; border-color: #92400e !important; }
@@ -591,6 +635,7 @@ export default function VisualizerClient({ initialSections }) {
         .dark [data-theme-card="Collaborative Sessions"] { background: #022c22 !important; border-color: #047857 !important; }
         .dark [data-theme-header="Code Lab"] { background: #3e4143 !important; border-color: #4b5563 !important; }
         .dark [data-theme-header="Array"] { background: #23133d !important; border-color: #5b21b6 !important; }
+        .dark [data-theme-header="String"] { background: #3b132b !important; border-color: #be185d !important;}
         .dark [data-theme-header="Stack"] { background: #182847 !important; border-color: #1e3a8a !important; }
         .dark [data-theme-header="Queue"] { background: #173820 !important; border-color: #166534 !important; }
         .dark [data-theme-header="Linked List"] { background: #3d240a !important; border-color: #92400e !important; }
