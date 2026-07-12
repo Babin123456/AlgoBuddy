@@ -182,6 +182,7 @@ export function CommandPalette() {
   }, []);
 
   return (
+    <FocusTrap active={isOpen} onEscape={() => setIsOpen(false)}>
     /* Overlay */
     <div
       role="dialog"
@@ -317,5 +318,6 @@ export function CommandPalette() {
         </div>
       </div>
     </div>
+    </FocusTrap>
   );
 }

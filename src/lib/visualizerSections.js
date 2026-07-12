@@ -66,6 +66,26 @@ export const sections = [
     ],
   },
   {
+    title: "String",
+    slug: "string",
+    desc: "Pattern matching, string manipulation, and interview-based string algorithms",
+    subsections: [
+      {
+        title: "Basic Operations",
+        items: [
+          {
+            name: "Reverse String",
+            path: "/visualizer/string/reverse-string",
+          },
+          {
+            name: "Palindrome Check",
+            path: "/visualizer/string/palindrome-check",
+          },
+        ],
+      },
+    ],
+  },  
+  {
     title: "Recursion",
     slug: "recursion",
     desc: "Understand stack frames, call stacks, base cases, and tree recursion through animated execution flow",
@@ -224,6 +244,7 @@ export const sections = [
           { name: "AVL Tree Deletion", path: "/visualizer/tree/avl/deletion" },
           { name: "Trie (Prefix Tree)", path: "/visualizer/tree/advanced/trie" },
           { name: "Segment Trees", path: "/visualizer/tree/advanced/segment" },
+          { name: "2D Segment Trees", path: "/visualizer/tree/advanced/segment-2d" },
           { name: "Fenwick Trees", path: "/visualizer/tree/advanced/fenwick" },
         ],
       },
