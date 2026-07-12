@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { createServerClient } from "@supabase/ssr";
-import { ApiError, AuthError, ConfigError, ValidationError, handleApiError } from "@/lib/apiErrors";
+import { ApiError, AuthError, ConfigError, handleApiError } from "@/lib/apiErrors";
 
 let supabaseAdminInstance;
 
