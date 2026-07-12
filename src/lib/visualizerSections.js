@@ -75,6 +75,10 @@ export const sections = [
             name: "Reverse String",
             path: "/visualizer/string/reverse-string",
           },
+          {
+            name: "Palindrome Check",
+            path: "/visualizer/string/palindrome-check",
+          },
         ],
       },
     ],
