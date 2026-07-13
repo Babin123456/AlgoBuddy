@@ -81,6 +81,10 @@ export const sections = [
             name: "Palindrome Check",
             path: "/visualizer/string/palindrome-check",
           },
+          {
+            name: "Character Frequency",
+            path: "/visualizer/string/character-frequency",
+          },
         ],
       },
     ],

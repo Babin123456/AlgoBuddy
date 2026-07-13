@@ -17,6 +17,7 @@ export const MODULE_MAPS = {
     radixSort : "radix-sort-001",
     countingSort : "a3b0cb48-1234-4cde-8f6b-9f12a3b4c5d6",
     reverseString: "reverse-string",
+    characterFrequencyLogic:"character-frequency",
     pushPop : "48138388-914b-4f84-8468-683175ce1a1e",
     peek : "fd95f8af-fb22-413f-9080-ebb558b53e70",
     isEmpty : "05ecbddd-e3d4-4fa1-aa45-71accac97d79",

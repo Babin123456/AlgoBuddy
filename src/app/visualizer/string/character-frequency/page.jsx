@@ -1,7 +1,8 @@
-import Animation from "@/app/visualizer/string/reverse-string/animation";
+import Animation from "./animation";
+import Code from "./codeBlock";
+import Content from "./content";
+
 import ExploreOther from "@/app/components/ui/exploreOther";
-import Code from "@/app/visualizer/string/reverse-string/codeBlock";
-import Content from "@/app/visualizer/string/reverse-string/content";
 import VisualizerPageLayout, {
   createVisualizerPaths,
 } from "@/app/visualizer/components/VisualizerPageLayout";
@@ -9,8 +10,8 @@ import VisualizerPageLayout, {
 export default function Page() {
   return (
     <VisualizerPageLayout
-      paths={createVisualizerPaths("String", "Reverse String")}
-      title="Reverse String"
+      paths={createVisualizerPaths("String", "Character Frequency")}
+      title="Character Frequency"
       animation={<Animation />}
       content={<Content />}
       code={<Code />}
@@ -19,13 +20,13 @@ export default function Page() {
           title="Explore other string algorithms"
           links={[
             {
-              text: "Palindrome Check",
-              url: "../palindrome",
+              text: "Reverse String",
+              url: "../reverse-string",
             },
             {
-            text: "Character Frequency",
-            url: "../character-frequency",
-          },
+              text: "Palindrome Check",
+              url: "../palindrome-check",
+            },
           ]}
         />
       }

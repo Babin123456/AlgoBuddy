@@ -10,6 +10,7 @@ import MatchmakingModal from "@/app/components/ui/MatchmakingModal";
 import DuelSimulatorModal from "@/app/components/ui/DuelSimulatorModal";
 import SpectatorSimulatorModal from "@/app/components/ui/SpectatorSimulatorModal";
 import CreateDuelModal from "@/app/components/ui/CreateDuelModal";
+import TournamentCard from "@/app/components/ui/TournamentCard";
 import Footer from "@/app/components/footer";
 import {
   Search,
@@ -106,6 +107,13 @@ export default function ArenaPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedRow, setExpandedRow] = useState(null);
 
+  // Tournament Timer State
+  const [tournamentTimeLeft, setTournamentTimeLeft] = useState({
+    days: 0, hours: 0, minutes: 0, seconds: 0
+  });
+  const [tournamentFilter, setTournamentFilter] = useState("Upcoming");
+  const [badgeCategory, setBadgeCategory] = useState("All");
+
   const calculateRank = (xp) => {
     if (xp >= 10000) return { name: "Grandmaster", Icon: Crown, color: "text-purple-500", ringColor: "border-purple-500" };
     if (xp >= 5000) return { name: "Diamond", Icon: Award, color: "text-indigo-500", ringColor: "border-indigo-500" };
@@ -133,6 +141,40 @@ export default function ArenaPage() {
   const ringRadius = 62;
   const ringCircumference = 2 * Math.PI * ringRadius;
   const ringDashoffset = ringCircumference - (rankProgress / 100) * ringCircumference;
+
+  // Tournament Timer Effect
+  useEffect(() => {
+    const getNextTargetDate = () => {
+      const now = new Date();
+      const target = new Date();
+      target.setDate(now.getDate() + ((7 - now.getDay()) % 7)); // Next Sunday
+      target.setHours(18, 0, 0, 0); // 6:00 PM
+      if (target.getTime() <= now.getTime()) {
+        target.setDate(target.getDate() + 7);
+      }
+      return target;
+    };
+
+    const targetDate = getNextTargetDate();
+
+    const updateTimer = () => {
+      const difference = targetDate.getTime() - new Date().getTime();
+      if (difference <= 0) {
+        setTournamentTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        return;
+      }
+      setTournamentTimeLeft({
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((difference / 1000 / 60) % 60),
+        seconds: Math.floor((difference / 1000) % 60)
+      });
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const handleHashChange = () => {

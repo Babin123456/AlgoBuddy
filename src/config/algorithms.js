@@ -1999,4 +1999,23 @@ export const algorithmRegistry = {
     import("@/app/visualizer/string/palindrome-check/page")
   ),
 },
+"string/character-frequency": {
+  metadata: {
+    title: "Character Frequency | AlgoBuddy",
+    description:
+      "Visualize the Character Frequency algorithm with step-by-step animation.",
+    keywords: [
+      "Character Frequency",
+      "String",
+      "HashMap",
+      "Frequency Counter",
+      "Character Frequency Visualizer",
+    ],
+    robots: "index, follow",
+  },
+
+  component: dynamic(() =>
+    import("@/app/visualizer/string/character-frequency/page")
+  ),
+},
 };
