@@ -181,6 +181,91 @@ const sections = [
     ],
   },
   {
+    title: "String",
+    slug: "string",
+    desc: "Pattern matching, string manipulation, and interview-based string algorithms",
+    icon: (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M7 8h10M7 12h8M7 16h6"
+        />
+      </svg>
+    ),
+    info: {
+      About:
+        "Strings are sequences of characters used to represent text. String algorithms focus on searching, matching, manipulation, and optimization techniques.",
+      Representation: null,
+    },
+    subsections: [
+      {
+        title: "Basic Operations",
+        items: [
+          {
+            name: "Reverse String",
+            path: "/visualizer/string/reverse-string",
+          },
+          {
+            name: "Palindrome Check",
+            path: "/visualizer/string/palindrome",
+          },
+          {
+            name: "Character Frequency",
+            path: "/visualizer/string/frequency",
+          },
+          {
+            name: "Anagram Check",
+            path: "/visualizer/string/anagram",
+          },
+          {
+            name: "Longest Common Prefix",
+            path: "/visualizer/string/longest-common-prefix",
+          },
+        ],
+      },
+
+      {
+        title: "Pattern Matching",
+        items: [
+          {
+            name: "KMP Algorithm",
+            path: "/visualizer/string/kmp",
+          },
+          {
+            name: "Rabin-Karp",
+            path: "/visualizer/string/rabin-karp",
+          },
+          {
+            name: "Z Algorithm",
+            path: "/visualizer/string/z-algorithm",
+          },
+        ],
+      },
+
+      {
+        title: "Interview Problems",
+        items: [
+          {
+            name: "Longest Substring Without Repeating Characters",
+            path: "/visualizer/string/longest-substring",
+          },
+          {
+            name: "Minimum Window Substring",
+            path: "/visualizer/string/minimum-window",
+          },
+        ],
+      },
+    ],
+  },
+  {
     title: "Recursion",
     slug: "recursion",
     desc: "Understand stack frames, call stacks, base cases, and tree recursion through animated execution flow",

@@ -1601,6 +1601,22 @@ export const algorithmRegistry = {
 },
     component: dynamic(() => import('@/app/visualizer/tree/advanced/segment/AlgorithmClient')),
   },
+  "tree/advanced/segment-2d": {
+    metadata: {
+  title: "2D Segment Tree Visualizer | Interactive Matrix Range Query & Point Updates | AlgoBuddy",
+  description:
+    "Explore 2D Segment Tree (Tree of Trees) structures, dynamic grid queries, matrix builds, and point updates step-by-step with interactive grid animations, explanations, and quizzes.",
+  keywords: [
+    "2D Segment Tree",
+    "Matrix Range Query",
+    "Grid Point Update",
+    "DSA Tree Animations",
+    "Tree of Trees"
+  ],
+  robots: "index, follow",
+},
+    component: dynamic(() => import('@/app/visualizer/tree/advanced/segment-2d/AlgorithmClient')),
+  },
   "tree/advanced/trie": {
     metadata: {
   title: "Trie (Prefix Tree) Visualizer | Interactive Word Search & Autocomplete | AlgoBuddy",
@@ -1947,4 +1963,59 @@ export const algorithmRegistry = {
 },
     component: dynamic(() => import('@/app/visualizer/tree/traversing/pre-order/AlgorithmClient')),
   },
+  "string/reverse-string": {
+  metadata: {
+    title: "Reverse String | AlgoBuddy",
+    description:
+      "Visualize the Reverse String algorithm with step-by-step animation.",
+    keywords: [
+      "Reverse String",
+      "String",
+      "String Visualizer",
+      "Reverse String Visualizer",
+    ],
+    robots: "index, follow",
+  },
+
+  component: dynamic(() =>
+    import("@/app/visualizer/string/reverse-string/page")
+  ),
+},
+"string/palindrome-check": {
+  metadata: {
+    title: "Palindrome Check | AlgoBuddy",
+    description:
+      "Visualize the Palindrome Check algorithm with step-by-step animation.",
+    keywords: [
+      "Palindrome Check",
+      "Palindrome",
+      "String",
+      "String Visualizer",
+    ],
+    robots: "index, follow",
+  },
+
+  component: dynamic(() =>
+    import("@/app/visualizer/string/palindrome-check/page")
+  ),
+},
+"string/character-frequency": {
+  metadata: {
+    title: "Character Frequency | AlgoBuddy",
+    description:
+      "Visualize the Character Frequency algorithm with step-by-step animation.",
+    keywords: [
+      "Character Frequency",
+      "String",
+      "HashMap",
+      "Frequency Counter",
+      "Character Frequency Visualizer",
+    ],
+    robots: "index, follow",
+  },
+
+  component: dynamic(() =>
+    import("@/app/visualizer/string/character-frequency/page")
+  ),
+},
 };
