@@ -1,6 +1,7 @@
 // app/components/models/GraphCanvas.jsx
 "use client";
 import { useRef, useState, useCallback } from "react";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
 const NODE_RADIUS = 26;
 const COLORS = {
@@ -108,7 +109,12 @@ export default function GraphCanvas({
       if (!interactive || !onAddNode) return;
       if (e.target !== svgRef.current) return;
       const rect = svgRef.current.getBoundingClientRect();
-      onAddNode({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+      const scaleX = rect.width / svgRef.current.clientWidth;
+      const scaleY = rect.height / svgRef.current.clientHeight;
+      onAddNode({ 
+        x: (e.clientX - rect.left) / scaleX, 
+        y: (e.clientY - rect.top) / scaleY 
+      });
       setEdgeStart(null);
     },
     [interactive, onAddNode]
@@ -146,11 +152,31 @@ const handleMouseMove = useCallback(
     if (!draggingNode || !onMoveNode || !svgRef.current) return;
 
     const rect = svgRef.current.getBoundingClientRect();
+    const scaleX = rect.width / svgRef.current.clientWidth;
+    const scaleY = rect.height / svgRef.current.clientHeight;
 
     onMoveNode(
       draggingNode,
-      e.clientX - rect.left,
-      e.clientY - rect.top
+      (e.clientX - rect.left) / scaleX,
+      (e.clientY - rect.top) / scaleY
+    );
+  },
+  [draggingNode, onMoveNode]
+);
+
+const handleTouchMove = useCallback(
+  (e) => {
+    if (!draggingNode || !onMoveNode || !svgRef.current) return;
+    
+    const touch = e.touches[0];
+    const rect = svgRef.current.getBoundingClientRect();
+    const scaleX = rect.width / svgRef.current.clientWidth;
+    const scaleY = rect.height / svgRef.current.clientHeight;
+
+    onMoveNode(
+      draggingNode,
+      (touch.clientX - rect.left) / scaleX,
+      (touch.clientY - rect.top) / scaleY
     );
   },
   [draggingNode, onMoveNode]
@@ -203,17 +229,30 @@ const handleMouseUp = useCallback(() => {
   };
 
   return (
-    <svg
-      ref={svgRef}
-      width="100%"
-      height="100%"
-      className={className}
-      style={{ cursor: interactive && edgeStart !== null ? "crosshair" : "default", minHeight: 420 }}
-      onClick={handleCanvasClick}
-      onMouseMove={handleMouseMove}
-onMouseUp={handleMouseUp}
-onMouseLeave={handleMouseUp}
-    >
+    <div className={`relative w-full h-full min-h-[420px] ${className || ""}`}>
+      <TransformWrapper
+        initialScale={1}
+        minScale={0.1}
+        maxScale={4}
+        centerOnInit={false}
+        wheel={{ step: 0.1 }}
+        panning={{ disabled: !interactive, excludedClasses: ['nodrag'] }}
+        doubleClick={{ disabled: true }}
+      >
+        <TransformComponent wrapperStyle={{ width: "100%", height: "100%" }} contentStyle={{ width: "100%", height: "100%" }}>
+          <svg
+            ref={svgRef}
+            width="100%"
+            height="100%"
+            style={{ cursor: interactive && edgeStart !== null ? "crosshair" : (interactive ? "grab" : "default") }}
+            onClick={handleCanvasClick}
+            onMouseMove={handleMouseMove}
+            onTouchMove={handleTouchMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            onTouchEnd={handleMouseUp}
+            onTouchCancel={handleMouseUp}
+          >
       <defs>
         <marker
           id="arrowhead"
@@ -272,9 +311,6 @@ onMouseLeave={handleMouseUp}
           ? edgeEndpoint(src.x, src.y, tgt.x, tgt.y, NODE_RADIUS)
           : { x: tgt.x, y: tgt.y };
 
-        const labelX = (src.x + tgt.x) / 2;
-        const labelY = (src.y + tgt.y) / 2;
-
         return (
           <g key={idx}>
             <line
@@ -315,8 +351,10 @@ onMouseLeave={handleMouseUp}
         return (
           <g
             key={node.id}
+            className="nodrag"
             onClick={(e) => handleNodeClick(e, node.id)}
             onMouseDown={(e) => handleNodeMouseDown(e, node.id)}
+            onTouchStart={(e) => handleNodeMouseDown(e, node.id)}
             onContextMenu={(e) => handleNodeRightClick(e, node.id)}
             style={{ cursor: interactive ? "pointer" : "default" }}
           >
@@ -374,6 +412,9 @@ onMouseLeave={handleMouseUp}
           Click another node to connect · click same node or press Esc to cancel
         </text>
       )}
-    </svg>
+      </svg>
+        </TransformComponent>
+      </TransformWrapper>
+    </div>
   );
 }
