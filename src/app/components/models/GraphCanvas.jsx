@@ -227,7 +227,7 @@ onMouseLeave={handleMouseUp}
           <path
             d="M2 1L8 5L2 9"
             fill="none"
-            stroke="#22c55e"
+            className="stroke-gray-500 dark:stroke-gray-400"
             strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -245,7 +245,7 @@ onMouseLeave={handleMouseUp}
           <path
             d="M2 1L8 5L2 9"
             fill="none"
-            stroke="#f97316"
+            className="stroke-orange-500"
             strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -263,7 +263,7 @@ onMouseLeave={handleMouseUp}
         }
 
         const isActive = isActiveEdge(edge) || currentNode === edge.from || currentNode === edge.to;
-        const edgeColor = isActive ? "#f97316" : "#6b7280";
+        const edgeClass = isActive ? "stroke-orange-500" : "stroke-gray-500 dark:stroke-gray-400";
         const markerEnd = edge.directed
           ? isActive ? "url(#arrowhead-active)" : "url(#arrowhead)"
           : undefined;
@@ -282,7 +282,7 @@ onMouseLeave={handleMouseUp}
               y1={src.y}
               x2={ex}
               y2={ey}
-              stroke={edgeColor}
+              className={edgeClass}
               strokeWidth={isActive ? 2 : 1.5}
               markerEnd={markerEnd}
               style={{ cursor: interactive ? "pointer" : "default" }}
