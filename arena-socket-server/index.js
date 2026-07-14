@@ -897,7 +897,7 @@ app.get("/debug", async (req, res) => {
 
     const debugKey = process.env.DEBUG_KEY;
     const providedKey = req.headers['x-debug-key'];
-    if (debugKey && providedKey !== debugKey) {
+    if (!debugKey || providedKey !== debugKey) {
       return res.status(403).json({ error: "Forbidden" });
     }
 
