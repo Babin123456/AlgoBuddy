@@ -76,32 +76,24 @@ async function executeCode(code) {
     // Create a context within the isolate
     context = await isolate.createContext();
 
-    // Escape template literal sequences in user code to prevent injection
-    // via backtick or ${} sequences at string-creation time.
-    const escapedCode = code.replace(/`/g, '\\`').replace(/\$\{/g, '\\${');
-    const wrappedCode = `
-      (function() {
-        const outputLines = [];
-        const console = {
-          log: (...args) => {
-            outputLines.push(args.map(String).join(" "));
-          },
-          warn: (...args) => {
-            outputLines.push("[warn] " + args.map(String).join(" "));
-          },
-          error: (...args) => {
-            outputLines.push("[error] " + args.map(String).join(" "));
-          },
-          info: (...args) => {
-            outputLines.push("[info] " + args.map(String).join(" "));
-          },
-        };
-        
-        ${escapedCode}
-        
-        return outputLines.join("\\n");
-      })()
-    `;
+    // Escape backslashes and single quotes for safe string concatenation.
+    // Using string concatenation instead of template literals so backticks
+    // and ${} in user code are harmless characters.
+    const safeCode = code.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    const wrappedCode =
+      '(function() {\n' +
+      '  const outputLines = [];\n' +
+      '  const console = {\n' +
+      '    log: (...args) => { outputLines.push(args.map(String).join(" ")); },\n' +
+      '    warn: (...args) => { outputLines.push("[warn] " + args.map(String).join(" ")); },\n' +
+      '    error: (...args) => { outputLines.push("[error] " + args.map(String).join(" ")); },\n' +
+      '    info: (...args) => { outputLines.push("[info] " + args.map(String).join(" ")); },\n' +
+      '  };\n' +
+      '\n' +
+      '  ' + safeCode + '\n' +
+      '\n' +
+      '  return outputLines.join("\\n");\n' +
+      '})()';
 
     // Compile and run the code
     const script = await isolate.compileScript(wrappedCode, {
