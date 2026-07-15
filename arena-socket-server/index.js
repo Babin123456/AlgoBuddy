@@ -936,7 +936,20 @@ app.get("/debug", async (req, res) => {
 
 app.get("/api/verify-match/:matchId/:userId", async (req, res) => {
   try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+    const token = authHeader.split(' ')[1];
+    const decoded = await verifyAuthToken(token);
+    if (!decoded || !decoded.sub) {
+      return res.status(401).json({ error: "Invalid authentication token" });
+    }
+
     const { matchId, userId } = req.params;
+    if (decoded.sub !== userId) {
+      return res.status(403).json({ error: "userId does not match authenticated user" });
+    }
     const matchKey = `{arena}:match:${matchId}`;
     const matchStr = await redisClient.get(matchKey);
     if (!matchStr) {
@@ -961,7 +974,20 @@ app.get("/api/verify-match/:matchId/:userId", async (req, res) => {
 
 app.get("/api/verify-match-result/:matchId/:userId", async (req, res) => {
   try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+    const token = authHeader.split(' ')[1];
+    const decoded = await verifyAuthToken(token);
+    if (!decoded || !decoded.sub) {
+      return res.status(401).json({ error: "Invalid authentication token" });
+    }
+
     const { matchId, userId } = req.params;
+    if (decoded.sub !== userId) {
+      return res.status(403).json({ error: "userId does not match authenticated user" });
+    }
     const matchKey = `{arena}:match:${matchId}`;
 
     const matchStr = await redisClient.get(matchKey);
@@ -994,6 +1020,16 @@ app.get("/health", (req, res) => {
 
 app.get("/api/matches/active", async (req, res) => {
   try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+    const token = authHeader.split(' ')[1];
+    const decoded = await verifyAuthToken(token);
+    if (!decoded || !decoded.sub) {
+      return res.status(401).json({ error: "Invalid authentication token" });
+    }
+
     const matchKeys = await scanRedisKeys("{arena}:match:*");
     const activeMatches = [];
     for (const key of matchKeys) {
