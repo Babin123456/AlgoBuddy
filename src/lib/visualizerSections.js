@@ -93,6 +93,23 @@ export const sections = [
           },
         ],
       },
+      {
+        title: "Pattern Matching",
+        items: [
+          {
+            name: "KMP Algorithm",
+            path: "/visualizer/string/kmp-algorithm",
+          },
+          {
+            name: "Rabin-Karp",
+            path: "/visualizer/string/rabin-karp",
+          },
+          {
+            name: "Z Algorithm",
+            path: "/visualizer/string/z-algorithm",
+          },
+        ],
+      },
     ],
   },  
   {
