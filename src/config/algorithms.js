@@ -2054,4 +2054,21 @@ export const algorithmRegistry = {
     import("@/app/visualizer/string/longest-common-prefix/page")
   ),
 },
+"string/kmp-algorithm": {
+  metadata: {
+    title: "KMP Algorithm | AlgoBuddy",
+    description:
+      "Visualize the Knuth-Morris-Pratt string matching algorithm step by step.",
+    keywords: [
+      "KMP",
+      "Knuth Morris Pratt",
+      "Pattern Matching",
+      "String",
+    ],
+    robots: "index,follow",
+  },
+  component: dynamic(() =>
+    import("@/app/visualizer/string/kmp-algorithm/page")
+  ),
+},
 };
